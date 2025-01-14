@@ -39,23 +39,24 @@ brew 'mas'        # Mac App Store manager (buggy)
 
 # GUI Applications
 # Development
-cask 'alacritty'  # GPU-accelerated terminal
-cask 'docker'     # Container platform
-cask 'gitkraken'  # Git client
-cask 'sublime-text' # Code editor
-cask 'visual-studio-code' # Code editor
+cask 'alacritty'                # GPU-accelerated terminal
+cask 'docker'                   # Container platform
+cask 'font-fira-code-nerd-font' # Nerd Font for Alacritty
+cask 'gitkraken'                # Git client
+cask 'sublime-text'             # Code editor
+cask 'visual-studio-code'       # Code editor
 
 # Productivity
-cask '1password'  # Password manager
-cask 'alfred@4'   # Spotlight replacement
-cask 'anytype'    # Note taking app
-cask 'arc'        # Browser
-cask 'cleanshot'  # Screenshot tool
-cask 'obsidian'   # Markdown note taking app
+cask '1password'    # Password manager
+cask 'alfred@4'     # Spotlight replacement
+cask 'anytype'      # Note taking app
+cask 'arc'          # Browser
+cask 'cleanshot'    # Screenshot tool
+cask 'obsidian'     # Markdown note taking app
 cask 'proton-drive' # Cloud storage
-cask 'rectangle'  # Window manager
-cask 'rocket'     # Anywhere emoji picker
-cask 'transnomino' # File renaming tool
+cask 'rectangle'    # Window manager
+cask 'rocket'       # Anywhere emoji picker
+cask 'transnomino'  # File renaming tool
 
 # Mac App Store
 mas 'Boop', id: 1518425043          # Clipboard manager
