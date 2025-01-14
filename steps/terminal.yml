@@ -1,0 +1,38 @@
+---
+
+- clean: ['~']
+
+# See https://ohmyz.sh
+- shell:
+  - command: |
+      sh -c \
+        "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      || true
+    description: Install Oh-My-Zsh
+    stdout: true
+    stderr: true
+
+- link:
+  # Terminal:
+  ~/.shell:
+    path: shell
+    create: true
+  ~/.zshrc:
+    path: config/zshrc
+    force: true
+  ~/.zshenv:
+    path: config/zshenv
+    force: true
+
+  ~/.hushlogin: config/hushlogin
+  ~/.zplugrc: config/zplugrc
+  ~/.alacritty.toml: config/alacritty.toml
+
+  # Git:
+  ~/.gitconfig: config/gitconfig
+  ~/.gitignore_global: config/gitignore
+  ~/.gitattributes_global: config/gitattributes
+
+  # Editors:
+  ~/.editorconfig: config/editorconfig
+

@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# `.exports` is used to provide custom variables.
+
+
+# === Path management ===
+
+# Helper function to add directories to the PATH without duplicates
+add_to_path() {
+  if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+    export PATH="$1:$PATH"
+  fi
+}
+
+
+# These path modifications should be first!
+add_to_path "$HOME/.local/bin"              # pipx binaries
+add_to_path "/usr/local/share/npm/bin"      # npm global
+add_to_path "$HOME/.composer/vendor/bin"     # global Composer tools
+add_to_path "$HOME/.node/bin"               # global Node binaries
+add_to_path "vendor/bin"                    # project specific binaries
+add_to_path "node_modules/.bin"             # project specific node modules
+add_to_path "/opt/homebrew/opt/mysql/bin"   # mysql
+add_to_path "/opt/homebrew/opt/php@7.2/bin" # php
+add_to_path "/opt/homebrew/opt/php@7.2/sbin"
+
+
+# === General ===
+
+# Homebrew:
+export HOMEBREW_NO_ANALYTICS=1  # disables statistics that brew collects
+
+# Pagers:
+# This affects every invocation of `less`.
+#
+#   -i       smart case-insensitive search
+#   -R       color
+#   -F       exit if there is less than one page of content
+#   -X       keep content on screen after exit
+#   -M       show more info at the bottom prompt line
+#   -x4      tabs are 4 instead of 8
+export LESS='-iRFXMx4'
+export PAGER='less'
+
+
+# === Version & package managers ===
+
+# nvm:
+export NVM_DIR="$HOME/.nvm"
+[ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && source "$(brew --prefix)/opt/nvm/nvm.sh"
+
+# chruby:
+[ -s "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh" ] && source "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh"
+
+# rye:
+[ -s "$HOME/.rye/env" ] && source "$HOME/.rye/env"
+
+# bun:
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+
+# Load private exports if they exist
+[ -f "$HOME/.private/private.exports" ] && source "$HOME/.private/private.exports"
+
+
+# === Histories ===
+
+# Enable persistent REPL history for `node`.
+export NODE_REPL_HISTORY="$HOME/.node_history"
+# Use sloppy mode by default, matching web browsers.
+export NODE_REPL_MODE='sloppy'
+
+
+# === Code highlight ===
+# https://github.com/zsh-users/zsh-syntax-highlighting
+
+# We won't highlight code longer than 200 chars, because it is slow:
+export ZSH_HIGHLIGHT_MAXLENGTH=200
+
+
+# === PATH ===
+
+# This should be the last line:
+export PATH
