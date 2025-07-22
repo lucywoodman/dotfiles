@@ -56,6 +56,13 @@ source "$HOME/.shell/.aliases"
 source "$HOME/.shell/.external"
 source "$HOME/.shell/.completions"
 
+# Load command functions
+if [[ -d "$HOME/.shell/commands" ]]; then
+  for cmd_file in "$HOME/.shell/commands"/*; do
+    [[ -f "$cmd_file" ]] && source "$cmd_file"
+  done
+fi
+
 
 # === Local variables and overrides ===
 

@@ -10,11 +10,52 @@ readonly DOTBOT_DIR='dotbot'
 readonly DOTBOT_BIN='bin/dotbot'
 readonly BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-readonly ARGS="$@"
+# Check for backup flag
+BACKUP_REQUESTED=false
+FILTERED_ARGS=()
+
+for arg in "$@"; do
+  case $arg in
+    --backup)
+      BACKUP_REQUESTED=true
+      ;;
+    --help|-h)
+      cat << EOF
+Dotfiles Installation Script
+
+Usage: $0 [OPTIONS]
+
+Options:
+  --backup      Create backup of existing dotfiles before installation
+  --help, -h    Show this help message
+
+Examples:
+  $0                Install dotfiles without backup
+  $0 --backup      Install dotfiles with backup of existing config
+
+Backup files will be stored in ~/.dotfiles-backup-YYYYMMDD-HHMMSS/
+To restore a backup, run the restore.sh script in the backup directory.
+EOF
+      exit 0
+      ;;
+    *)
+      FILTERED_ARGS+=("$arg")
+      ;;
+  esac
+done
+
+readonly ARGS="${FILTERED_ARGS[@]}"
 
 cd "$BASEDIR"
 git submodule sync --quiet --recursive
 git submodule update --init --recursive
+
+# Create backup if requested
+if [[ "$BACKUP_REQUESTED" == true ]]; then
+  echo "📦 Creating backup of existing dotfiles..."
+  "$BASEDIR/scripts/backup"
+  echo ""
+fi
 
 # Linking dotfiles:
 
