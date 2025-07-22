@@ -1,0 +1,20 @@
+# Personal Claude Code data - contains conversation history and todos
+config/claude/projects/
+config/claude/todos/
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Private configuration files
+.private/
+
+# Temporary files
+*.tmp
+*.swp
+*~
