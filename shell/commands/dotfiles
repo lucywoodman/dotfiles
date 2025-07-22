@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# ABOUTME: Dotfiles management commands and utilities
+# ABOUTME: Provides helper functions for working with dotfiles
+
+# Quick backup and install
+dotfiles_reinstall() {
+    echo "🔄 Reinstalling dotfiles with backup..."
+    cd ~/.dotfiles || { echo "❌ Could not cd to ~/.dotfiles"; return 1; }
+    ./install --backup
+}
+
+# Show latest backup location
+dotfiles_latest_backup() {
+    if [[ -f ~/.dotfiles-latest-backup ]]; then
+        local backup_dir
+        backup_dir=$(cat ~/.dotfiles-latest-backup)
+        echo "📦 Latest backup: $backup_dir"
+        if [[ -d "$backup_dir" ]]; then
+            echo "📋 Backup contents:"
+            ls -la "$backup_dir" | grep -v "^total"
+        else
+            echo "⚠️  Backup directory not found"
+        fi
+    else
+        echo "📦 No backup found"
+    fi
+}
+
+# Restore from latest backup
+dotfiles_restore_latest() {
+    if [[ -f ~/.dotfiles-latest-backup ]]; then
+        local backup_dir
+        backup_dir=$(cat ~/.dotfiles-latest-backup)
+        if [[ -d "$backup_dir" && -x "$backup_dir/restore.sh" ]]; then
+            echo "🔄 Restoring from latest backup: $backup_dir"
+            "$backup_dir/restore.sh"
+        else
+            echo "❌ Latest backup restore script not found or not executable"
+        fi
+    else
+        echo "📦 No backup found to restore from"
+    fi
+}
+
+# Update dotfiles
+dotfiles_update() {
+    echo "⬇️  Updating dotfiles..."
+    cd ~/.dotfiles || { echo "❌ Could not cd to ~/.dotfiles"; return 1; }
+    git pull && ./install
+}
+
+# Show dotfiles status
+dotfiles_status() {
+    echo "📊 Dotfiles Status"
+    echo "=================="
+    cd ~/.dotfiles || { echo "❌ Could not cd to ~/.dotfiles"; return 1; }
+    
+    echo ""
+    echo "📁 Repository:"
+    git status --porcelain | head -10
+    if [[ $(git status --porcelain | wc -l) -gt 10 ]]; then
+        echo "... and $(( $(git status --porcelain | wc -l) - 10 )) more files"
+    fi
+    
+    echo ""
+    echo "🔗 Active symlinks:"
+    find ~ -maxdepth 1 -type l -exec ls -la {} \; 2>/dev/null | grep "\.dotfiles" | head -5
+    
+    echo ""
+    echo "📦 Last backup:"
+    dotfiles_latest_backup | head -3
+}
+
+# Quick edit dotfiles
+dotfiles_edit() {
+    cd ~/.dotfiles || { echo "❌ Could not cd to ~/.dotfiles"; return 1; }
+    ${EDITOR:-helix} .
+}
