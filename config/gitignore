@@ -17,6 +17,7 @@
 \#*\#
 \.#*
 .ipynb_checkpoints/
+.phpactor.json
 
 # Logs and databases #
 ######################

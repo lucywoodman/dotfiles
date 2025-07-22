@@ -21,8 +21,8 @@ add_to_path "$HOME/.node/bin"               # global Node binaries
 add_to_path "vendor/bin"                    # project specific binaries
 add_to_path "node_modules/.bin"             # project specific node modules
 add_to_path "/opt/homebrew/opt/mysql/bin"   # mysql
-add_to_path "/opt/homebrew/opt/php@7.2/bin" # php
-add_to_path "/opt/homebrew/opt/php@7.2/sbin"
+add_to_path "/opt/homebrew/opt/php@8.1/bin" # php
+add_to_path "/opt/homebrew/opt/php@8.1/sbin"
 
 
 # === General ===
@@ -78,7 +78,6 @@ export NODE_REPL_MODE='sloppy'
 
 # We won't highlight code longer than 200 chars, because it is slow:
 export ZSH_HIGHLIGHT_MAXLENGTH=200
-
 
 # === PATH ===
 

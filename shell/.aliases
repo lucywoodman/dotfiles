@@ -3,15 +3,16 @@
 # `.aliases` is used to provide custom aliases.
 
 # === Navigation Aliases ===
+alias home="cd $HOME"
 alias dotfiles="cd $HOME/.dotfiles"
 alias library="cd $HOME/Library"
-alias notes="cd $HOME/Notes"
-alias projects="cd $HOME/Code"
+alias notes="cd $HOME/notes"
+alias workspace="cd $HOME/workspace"
 alias downloads="cd /private/tmp/downloads"
 
 # === System Commands ===
-# Sorts directories in top, colors, and prints `/` at directories:
-alias ll='eza -l -a --icons --group-directories-first'
+# Sorts directories in top:
+alias ll='lsd -la --group-dirs first'
 
 # Use syntax highlight for `cat`:
 alias cat='bat --paging never --decorations never --plain'
@@ -29,6 +30,13 @@ alias dcl="docker compose logs -f"
 
 # === Kubernetes Aliases ===
 alias k8="kubectl"
+
+# === Tmux Aliases ===
+alias tmuxdev='tmux attach -t dev || tmux new-session -s dev'
+alias tmuxdotfiles='tmux attach -t dotfiles || tmux new-session -s dotfiles'
+alias tmuxoverdrive='tmux attach -t overdrive || tmux new-session -s overdrive'
+alias tmuxjqs='tmux attach -t jqs || tmux new-session -s jqs'
+alias tmuxst2='tmux attach -t st2 || tmux new-session -s st2'
 
 # Load private aliases if they exist
 [ -f "$HOME/.private/private.aliases" ] && source "$HOME/.private/private.aliases"

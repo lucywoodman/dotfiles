@@ -1,6 +1,5 @@
 ---
-
 - create:
-    - ~/Notes
-    - ~/Code
+    - ~/notes
+    - ~/workspace
     - ~/.private
