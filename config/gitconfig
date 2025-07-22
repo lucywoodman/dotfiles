@@ -4,9 +4,9 @@
   autocrlf = input
   safecrlf = warn
 [pager]
-  diff = "delta --syntax-theme=$SOBOLE_SYNTAX_THEME"
-  blame = "delta --syntax-theme=$SOBOLE_SYNTAX_THEME"
-  show = "delta --syntax-theme=$SOBOLE_SYNTAX_THEME"
+  diff = "delta --syntax-theme=ansi"
+  blame = "delta --syntax-theme=ansi"
+  show = "delta --syntax-theme=ansi"
 [commit]
   gpgsign = true
 [push]
@@ -17,12 +17,14 @@
   pruneTags = true
 [user]
   useConfigOnly = true
+	name = lucywoodman
+	email = hello@lucywoodman.com
 [diff]
   indentHeuristic = on
   noprefix = true
   colorMoved = default
 [interactive]
-  diffFilter = "delta --color-only --features=interactive --syntax-theme=$SOBOLE_SYNTAX_THEME"
+  diffFilter = "delta --color-only --features=interactive --syntax-theme=ansi"
 [diff "nodiff"]
   command = true
 [rerere]
@@ -70,7 +72,7 @@
 [diff "generated"]
 	binary = true
 [pull]
-	rebase = false
+	rebase = true
 [init]
 	defaultBranch = main
 [tag]
@@ -79,3 +81,6 @@
 # Allow local customizations in the .gitconfig_local file
 [include]
   path = ~/.gitconfig_local
+[gitbutler]
+	aiOpenAIKeyOption = bringYourOwn
+	aiModelProvider = ollama
