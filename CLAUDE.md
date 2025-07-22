@@ -47,7 +47,7 @@ macos/settings.sh
 
 ### Directory Structure
 ```
-├── config/          # App configuration files (git, alacritty, etc.)
+├── config/          # App configuration files (git, helix, tmux, etc.)
 ├── shell/           # Shell customizations (.aliases, .exports, etc.)
 ├── steps/           # Dotbot YAML installation steps
 ├── macos/           # macOS system preference scripts
@@ -98,8 +98,8 @@ These are loaded automatically if they exist but are not tracked in git.
 ## Package Management
 
 The Brewfile contains 65+ packages organized by category:
-- **CLI Tools**: bat, eza, fzf, git-delta, jq, zellij, zoxide
-- **Development**: Docker, VS Code, Alacritty, GitKraken
+- **CLI Tools**: bat, lsd, fzf, git-delta, jq, tmux, zellij, zoxide
+- **Development**: Docker, Ghostty, Helix
 - **Productivity**: 1Password, Alfred, Arc, Obsidian, Rectangle
 - **Mac App Store**: Things 3, Dato, HazeOver
 
@@ -119,8 +119,8 @@ The Brewfile contains 65+ packages organized by category:
 
 ## Development Tools
 
-- **Terminal**: Alacritty with Fira Code Nerd Font
-- **Editor**: VS Code with settings sync, Sublime Text, Helix support
+- **Terminal**: Ghostty, tmux for session management
+- **Editor**: Helix text editor with custom configuration
 - **Containers**: Docker with compose aliases
 - **Cloud**: AWS CLI, Kubernetes tools
 
