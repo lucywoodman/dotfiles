@@ -23,7 +23,7 @@
 
     ~/.hushlogin: config/hushlogin
     ~/.zplugrc: config/zplugrc
-    ~/.alacritty.toml: config/alacritty.toml
+    ~/.tmux.conf: config/tmux.conf
 
     # Git:
     ~/.gitconfig: config/gitconfig
@@ -31,5 +31,12 @@
     ~/.gitattributes_global: config/gitattributes
 
     # Editors:
-    ~/.editorconfig: config/editorconfig
+    ~/.config/helix/config.toml:
+      create: true
+      path: config/helix.toml
+
+    # Claude Code:
+    ~/.claude:
+      force: true
+      path: config/claude
 
