@@ -32,6 +32,8 @@ brew 'nvm'        # Node.js version manager
 
 # Cloud & Container Tools
 brew 'awscli'     # AWS command line
+brew 'kubectl'    # Kubernetes control
+brew 'kubectx'    # Kubernetes context switcher
 
 # GUI Applications Managers
 brew 'mas'        # Mac App Store manager (buggy)
