@@ -12,7 +12,7 @@ Complete ALL of the following steps in sequence:
 
 ## Step 2: PLAN
 - Think harder about how to break the problem down into a series of small, manageable tasks
-- Create a planning document: `~/notes/plans/$(date +%Y-%m-%d)-NOJIRA-problem-description.md`
+- Create a planning document: `~/notes/plans/$(date +%Y-%m-%d)-problem-description.md`
 - Include the following in the planning document:
   - Problem description and analysis
   - Root cause investigation findings
@@ -22,10 +22,10 @@ Complete ALL of the following steps in sequence:
   - References to related code or previous work
 
 ## Step 3: CODE
-- Create a new branch using this format: `NOJIRA-description-of-problem`
+- Create a new branch using this format: `description-of-problem`
 - Solve the problem in small, manageable steps, according to your plan
 
 ## Step 4: COMMIT
-- Commit your changes after each step
+- Commit your changes after each step, using a meaningful commit message that follows conventional commit format
 
 
