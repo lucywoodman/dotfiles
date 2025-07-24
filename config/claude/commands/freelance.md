@@ -16,7 +16,7 @@ Complete ALL of the following steps in sequence:
 
 ## Step 2: PLAN
 - Think harder about how to break the issue down into a series of small, manageable tasks
-- Create a planning document: `~/notes/plans/$(date +%Y-%m-%d)-CLIENT-ISSUE-issue-title.md`
+- Create a planning document: `~/notes/plans/$(date +%Y-%m-%d)-$ARGUMENTS-issue-title.md`
 - Include the following in the planning document:
   - Issue number and title
   - Link to the GitHub issue
@@ -28,12 +28,11 @@ Complete ALL of the following steps in sequence:
   - Any potential risks or considerations
 
 ## Step 3: CODE
-- Create a new branch using client-focused format: `CLIENT-ISSUE-issue-title-with-hyphens`
-  - If client context not available, use: `freelance-ISSUE-issue-title-with-hyphens`
+- Create a new branch using format: `$ARGUMENTS-issue-title-with-hyphens`
 - Solve the issue in small, manageable steps, according to your plan
 
 ## Step 4: COMMIT
-- Commit your changes after each step
+- Commit your changes after each step, using a meaningful commit message that follows conventional commit format
 - Include issue reference in commit messages for tracking
 
 ## Freelance Workflow Considerations
