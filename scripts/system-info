@@ -1,0 +1,327 @@
+#!/usr/bin/env bash
+
+# ABOUTME: Displays system information and compatibility checks for dotfiles
+# ABOUTME: Provides cross-platform system detection and environment analysis
+
+set -euo pipefail
+
+# Color definitions
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly NC='\033[0m' # No Color
+
+# Enhanced logging functions
+log_info() {
+    echo -e "${BLUE}ℹ${NC}  $1"
+}
+
+log_success() {
+    echo -e "${GREEN}✓${NC}  $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠${NC}  $1"
+}
+
+log_error() {
+    echo -e "${RED}✗${NC}  $1"
+}
+
+log_header() {
+    echo -e "${WHITE}$1${NC}"
+}
+
+log_section() {
+    echo -e "${PURPLE}▶${NC}  $1"
+}
+
+# System detection functions
+get_os() {
+    case "$(uname -s)" in
+        Darwin*)    echo "macOS";;
+        Linux*)     echo "Linux";;
+        CYGWIN*)    echo "Windows (Cygwin)";;
+        MINGW*)     echo "Windows (MinGW)";;
+        MSYS*)      echo "Windows (MSYS)";;
+        *)          echo "Unknown";;
+    esac
+}
+
+get_arch() {
+    case "$(uname -m)" in
+        x86_64|amd64)   echo "x86_64";;
+        arm64|aarch64)  echo "ARM64";;
+        armv7l)         echo "ARM32";;
+        i686|i386)      echo "i386";;
+        *)              echo "$(uname -m)";;
+    esac
+}
+
+get_linux_distro() {
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        echo "$NAME"
+    elif [[ -f /etc/redhat-release ]]; then
+        cat /etc/redhat-release
+    else
+        echo "Unknown Linux distribution"
+    fi
+}
+
+get_macos_version() {
+    if command -v sw_vers >/dev/null 2>&1; then
+        echo "$(sw_vers -productName) $(sw_vers -productVersion)"
+    else
+        echo "Unknown macOS version"
+    fi
+}
+
+# Dependency checking functions
+check_command() {
+    local cmd="$1"
+    local description="$2"
+    local required="${3:-optional}"
+    
+    if command -v "$cmd" >/dev/null 2>&1; then
+        local version=""
+        case "$cmd" in
+            git)        version="$(git --version 2>/dev/null | cut -d' ' -f3)";;
+            brew)       version="$(brew --version 2>/dev/null | head -n1 | cut -d' ' -f2)";;
+            zsh)        version="$(zsh --version 2>/dev/null | cut -d' ' -f2)";;
+            tmux)       version="$(tmux -V 2>/dev/null | cut -d' ' -f2)";;
+            helix|hx)   version="$(helix --version 2>/dev/null | head -n1 | cut -d' ' -f2 2>/dev/null || echo "installed")";;
+            docker)     version="$(docker --version 2>/dev/null | cut -d' ' -f3 | tr -d ',')";;
+            *)          version="installed";;
+        esac
+        
+        if [[ "$required" == "required" ]]; then
+            log_success "$description: $version"
+        else
+            log_info "$description: $version"
+        fi
+        return 0
+    else
+        if [[ "$required" == "required" ]]; then
+            log_error "$description: Not found (required)"
+            return 1
+        else
+            log_warning "$description: Not found (optional)"
+            return 0
+        fi
+    fi
+}
+
+# XDG directory information
+show_xdg_info() {
+    log_section "XDG Base Directory Specification"
+    echo ""
+    
+    echo -e "  ${CYAN}XDG_CONFIG_HOME:${NC} ${XDG_CONFIG_HOME:-$HOME/.config} $([ -d "${XDG_CONFIG_HOME:-$HOME/.config}" ] && echo "${GREEN}✓${NC}" || echo "${RED}✗${NC}")"
+    echo -e "  ${CYAN}XDG_DATA_HOME:${NC}   ${XDG_DATA_HOME:-$HOME/.local/share} $([ -d "${XDG_DATA_HOME:-$HOME/.local/share}" ] && echo "${GREEN}✓${NC}" || echo "${RED}✗${NC}")"
+    echo -e "  ${CYAN}XDG_CACHE_HOME:${NC}  ${XDG_CACHE_HOME:-$HOME/.cache} $([ -d "${XDG_CACHE_HOME:-$HOME/.cache}" ] && echo "${GREEN}✓${NC}" || echo "${RED}✗${NC}")"
+    echo -e "  ${CYAN}XDG_STATE_HOME:${NC}  ${XDG_STATE_HOME:-$HOME/.local/state} $([ -d "${XDG_STATE_HOME:-$HOME/.local/state}" ] && echo "${GREEN}✓${NC}" || echo "${RED}✗${NC}")"
+    
+    echo ""
+    if [[ -z "${XDG_CONFIG_HOME:-}" ]]; then
+        log_info "XDG directories are using default locations"
+    else
+        log_info "Custom XDG directories are configured"
+    fi
+}
+
+# Environment analysis
+analyze_environment() {
+    log_section "Development Environment Analysis"
+    echo ""
+    
+    # Shell information
+    echo -e "  ${CYAN}Current Shell:${NC} $SHELL"
+    echo -e "  ${CYAN}Login Shell:${NC}  $(getent passwd "$USER" | cut -d: -f7 2>/dev/null || echo "Unknown")"
+    
+    # Terminal information
+    if [[ -n "${TERM_PROGRAM:-}" ]]; then
+        echo -e "  ${CYAN}Terminal:${NC}      $TERM_PROGRAM"
+    elif [[ -n "${TERMINAL_EMULATOR:-}" ]]; then
+        echo -e "  ${CYAN}Terminal:${NC}      $TERMINAL_EMULATOR"
+    else
+        echo -e "  ${CYAN}Terminal:${NC}      ${TERM:-Unknown}"
+    fi
+    
+    # PATH analysis
+    echo -e "  ${CYAN}PATH Entries:${NC}  $(echo $PATH | tr ':' '\n' | wc -l | tr -d ' ') directories"
+    
+    # Homebrew prefix detection
+    if command -v brew >/dev/null 2>&1; then
+        echo -e "  ${CYAN}Brew Prefix:${NC}   $(brew --prefix)"
+    fi
+    
+    echo ""
+}
+
+# Main system information display
+show_system_info() {
+    log_header "🖥️  System Information"
+    echo ""
+    
+    local os_name="$(get_os)"
+    local arch="$(get_arch)"
+    
+    echo -e "  ${CYAN}Operating System:${NC} $os_name"
+    echo -e "  ${CYAN}Architecture:${NC}     $arch"
+    
+    case "$os_name" in
+        "macOS")
+            echo -e "  ${CYAN}Version:${NC}          $(get_macos_version)"
+            ;;
+        "Linux")
+            echo -e "  ${CYAN}Distribution:${NC}     $(get_linux_distro)"
+            ;;
+    esac
+    
+    echo -e "  ${CYAN}Hostname:${NC}         $(hostname)"
+    echo -e "  ${CYAN}User:${NC}             $USER"
+    echo -e "  ${CYAN}Home Directory:${NC}   $HOME"
+    
+    echo ""
+}
+
+# Compatibility checks
+check_compatibility() {
+    log_section "Dotfiles Compatibility Check"
+    echo ""
+    
+    local compatible=true
+    local os_name="$(get_os)"
+    
+    # Check OS compatibility
+    case "$os_name" in
+        "macOS")
+            log_success "macOS: Fully supported"
+            ;;
+        "Linux")
+            log_info "Linux: Partially supported (manual package management required)"
+            ;;
+        *)
+            log_error "Unsupported operating system: $os_name"
+            compatible=false
+            ;;
+    esac
+    
+    # Check required dependencies
+    check_command "git" "Git" "required" || compatible=false
+    check_command "zsh" "Zsh shell" "required" || compatible=false
+    
+    # Check optional dependencies
+    check_command "brew" "Homebrew package manager"
+    check_command "tmux" "Terminal multiplexer"
+    check_command "helix" "Helix text editor"
+    check_command "docker" "Docker container platform"
+    check_command "gh" "GitHub CLI"
+    
+    echo ""
+    if [[ "$compatible" == true ]]; then
+        log_success "System is compatible with dotfiles installation"
+        return 0
+    else
+        log_error "System compatibility issues detected"
+        return 1
+    fi
+}
+
+# Package manager recommendations
+suggest_package_managers() {
+    local os_name="$(get_os)"
+    
+    log_section "Package Manager Recommendations"
+    echo ""
+    
+    case "$os_name" in
+        "macOS")
+            if command -v brew >/dev/null 2>&1; then
+                log_success "Homebrew is installed and ready"
+            else
+                log_warning "Homebrew not found"
+                echo -e "  ${CYAN}Install:${NC} /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            fi
+            ;;
+        "Linux")
+            log_info "Linux package managers detected:"
+            command -v apt >/dev/null 2>&1 && echo -e "  ${GREEN}✓${NC} APT (Debian/Ubuntu)"
+            command -v yum >/dev/null 2>&1 && echo -e "  ${GREEN}✓${NC} YUM (RHEL/CentOS)"
+            command -v dnf >/dev/null 2>&1 && echo -e "  ${GREEN}✓${NC} DNF (Fedora)"
+            command -v pacman >/dev/null 2>&1 && echo -e "  ${GREEN}✓${NC} Pacman (Arch)"
+            command -v flatpak >/dev/null 2>&1 && echo -e "  ${GREEN}✓${NC} Flatpak"
+            ;;
+    esac
+    
+    echo ""
+}
+
+# Help message
+show_help() {
+    cat << EOF
+${WHITE}System Information and Compatibility Check${NC}
+
+${CYAN}Usage:${NC} $0 [OPTIONS]
+
+${CYAN}Options:${NC}
+  ${GREEN}--compatibility, -c${NC}  Run compatibility check only
+  ${GREEN}--xdg${NC}               Show XDG directory information only
+  ${GREEN}--env${NC}               Show environment analysis only
+  ${GREEN}--help, -h${NC}          Show this help message
+
+${CYAN}Description:${NC}
+This script provides comprehensive system information and checks compatibility
+for dotfiles installation. It detects your operating system, architecture,
+available tools, and provides recommendations for optimal setup.
+
+${CYAN}Examples:${NC}
+  $0                   Show full system information
+  $0 --compatibility   Check if system is ready for dotfiles
+  $0 --xdg            Show XDG Base Directory compliance
+EOF
+}
+
+# Main function
+main() {
+    case "${1:-}" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --compatibility|-c)
+            check_compatibility
+            exit $?
+            ;;
+        --xdg)
+            show_xdg_info
+            exit 0
+            ;;
+        --env)
+            analyze_environment
+            exit 0
+            ;;
+        "")
+            # Full system information
+            show_system_info
+            analyze_environment
+            show_xdg_info
+            suggest_package_managers
+            echo ""
+            check_compatibility
+            ;;
+        *)
+            log_error "Unknown option: $1"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
