@@ -1,4 +1,3 @@
-tap 'homebrew/bundle'
 tap 'buo/cask-upgrade' # Enables 'brew cu' to upgrade GUI apps
 
 # Core CLI Tools
