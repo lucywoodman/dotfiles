@@ -2,16 +2,61 @@
 
 set -e
 
-echo -e "\U1F680 Setting up your Mac..."  # 🚀
+# Color definitions for enhanced output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly NC='\033[0m' # No Color
 
 # Standard dotbot pre-configuration:
-
 readonly DOTBOT_DIR='dotbot'
 readonly DOTBOT_BIN='bin/dotbot'
 readonly BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Check for backup flag
+# Enhanced logging functions
+log_info() {
+    echo -e "${BLUE}ℹ${NC}  $1"
+}
+
+log_success() {
+    echo -e "${GREEN}✓${NC}  $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠${NC}  $1"
+}
+
+log_error() {
+    echo -e "${RED}✗${NC}  $1"
+}
+
+log_step() {
+    echo -e "${PURPLE}▶${NC}  $1"
+}
+
+# Progress indicator
+show_progress() {
+    local current=$1
+    local total=$2
+    local step_name=$3
+    echo -e "${CYAN}[$current/$total]${NC} $step_name"
+}
+
+# Enhanced error handling
+handle_error() {
+    log_error "Installation failed during: $1"
+    log_info "Check the error messages above for details"
+    log_info "You can run './install --backup' to safely retry with backup"
+    exit 1
+}
+
+# Parse command line arguments
 BACKUP_REQUESTED=false
+AUTO_YES=false
 FILTERED_ARGS=()
 
 for arg in "$@"; do
@@ -19,21 +64,27 @@ for arg in "$@"; do
     --backup)
       BACKUP_REQUESTED=true
       ;;
+    --auto-yes|-y)
+      AUTO_YES=true
+      ;;
     --help|-h)
       cat << EOF
-Dotfiles Installation Script
+${WHITE}Dotfiles Installation Script${NC}
 
-Usage: $0 [OPTIONS]
+${CYAN}Usage:${NC} $0 [OPTIONS]
 
-Options:
-  --backup      Create backup of existing dotfiles before installation
-  --help, -h    Show this help message
+${CYAN}Options:${NC}
+  ${GREEN}--backup${NC}       Create backup of existing dotfiles before installation
+  ${GREEN}--auto-yes, -y${NC}  Skip interactive prompts (use for automation/CI)
+  ${GREEN}--help, -h${NC}     Show this help message
 
-Examples:
+${CYAN}Examples:${NC}
   $0                Install dotfiles without backup
-  $0 --backup      Install dotfiles with backup of existing config
+  $0 --backup       Install dotfiles with backup of existing config
+  $0 --auto-yes     Install dotfiles without prompts (unattended)
+  $0 --backup -y    Backup and install without prompts
 
-Backup files will be stored in ~/.dotfiles-backup-YYYYMMDD-HHMMSS/
+${YELLOW}Note:${NC} Backup files will be stored in ~/.dotfiles-backup-YYYYMMDD-HHMMSS/
 To restore a backup, run the restore.sh script in the backup directory.
 EOF
       exit 0
@@ -46,30 +97,75 @@ done
 
 readonly ARGS="${FILTERED_ARGS[@]}"
 
-cd "$BASEDIR"
-git submodule sync --quiet --recursive
-git submodule update --init --recursive
+# Welcome message with enhanced styling
+echo ""
+echo -e "${WHITE}🚀 Dotfiles Installation Starting...${NC}"
+echo ""
 
-# Create backup if requested
+# Pre-installation checks and setup
+log_step "Initializing installation environment"
+cd "$BASEDIR" || handle_error "changing to dotfiles directory"
+
+log_info "Updating git submodules"
+git submodule sync --quiet --recursive || handle_error "syncing git submodules"
+git submodule update --init --recursive || handle_error "updating git submodules"
+
+# Backup handling
 if [[ "$BACKUP_REQUESTED" == true ]]; then
-  echo "📦 Creating backup of existing dotfiles..."
-  "$BASEDIR/scripts/backup"
+  show_progress 1 4 "Creating backup of existing dotfiles"
+  if [[ "$AUTO_YES" == false ]]; then
+    log_warning "This will create a backup of your existing dotfiles"
+    read -p "Continue? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      log_info "Installation cancelled by user"
+      exit 0
+    fi
+  fi
+  
+  "$BASEDIR/scripts/backup" || handle_error "creating backup"
+  log_success "Backup created successfully"
   echo ""
 fi
 
-# Linking dotfiles:
-
-run_dotbot () {
-  local config
-  config="$1"
-
-  "$BASEDIR/$DOTBOT_DIR/$DOTBOT_BIN" \
+# Enhanced dotbot runner with error handling
+run_dotbot() {
+  local config="$1"
+  local step_name="$2"
+  local current_step="$3"
+  
+  show_progress "$current_step" 4 "$step_name"
+  
+  if ! "$BASEDIR/$DOTBOT_DIR/$DOTBOT_BIN" \
     -d "$BASEDIR" \
     --plugin-dir dotbot-brewfile \
-    -c "$config" $ARGS
+    -c "$config" $ARGS; then
+    handle_error "$step_name"
+  fi
+  
+  log_success "$step_name completed"
 }
 
-run_dotbot 'steps/directories.yml' || true
-run_dotbot 'steps/terminal.yml' || true
-run_dotbot 'steps/dependencies.yml' || true
+# Installation steps with progress tracking
+echo ""
+log_step "Beginning dotfiles installation"
+echo ""
+
+run_dotbot 'steps/directories.yml' "Setting up directories" 2
+run_dotbot 'steps/terminal.yml' "Configuring terminal environment" 3
+run_dotbot 'steps/dependencies.yml' "Installing packages and dependencies" 4
+
+# Installation complete
+echo ""
+log_success "Dotfiles installation completed successfully!"
+echo ""
+echo -e "${WHITE}🎉 Welcome to your enhanced development environment!${NC}"
+echo ""
+log_info "Next steps:"
+echo -e "   ${CYAN}•${NC} Restart your terminal to apply all changes"
+echo -e "   ${CYAN}•${NC} Run 'dotfiles_status' to verify your setup"
+if [[ "$BACKUP_REQUESTED" == true ]]; then
+  echo -e "   ${CYAN}•${NC} Your backup is safe in ~/.dotfiles-backup-* if you need to restore"
+fi
+echo ""
 

@@ -49,6 +49,42 @@ cd dotfiles
 ./install
 ```
 
+## Enhanced Installation Options
+
+The install script supports several advanced options for different use cases:
+
+### System Compatibility Check
+Before installation, check if your system is compatible:
+```bash
+./scripts/system-info --compatibility
+```
+
+### Safe Installation with Backup
+Create a backup of existing configurations before installation:
+```bash
+./install --backup
+```
+
+### Unattended Installation
+For automation, CI/CD, or scripted setups:
+```bash
+./install --auto-yes
+```
+
+### Combined Options
+Backup and install without prompts:
+```bash
+./install --backup --auto-yes
+```
+
+### System Information
+Get comprehensive system information and environment analysis:
+```bash
+./scripts/system-info              # Full system information
+./scripts/system-info --xdg        # XDG directory compliance
+./scripts/system-info --env        # Environment analysis
+```
+
 ## Configuration Structure
 
 ```
