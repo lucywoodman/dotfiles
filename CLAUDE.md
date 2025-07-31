@@ -35,6 +35,9 @@ brew cu
 
 # Apply macOS settings
 macos/settings.sh
+
+# Clean Claude Code chat history (reduces ~/.claude.json file size)
+claude-cleanup
 ```
 
 ## Architecture
