@@ -11,6 +11,7 @@ alias workspace="cd $HOME/workspace"
 
 # === Claude Code ===
 alias claude="$HOME/.claude/local/claude"
+alias claude-cleanup="$HOME/.dotfiles/scripts/claude-cleanup"
 alias downloads="cd /private/tmp/downloads"
 
 # === System Commands ===
