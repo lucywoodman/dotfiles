@@ -2,9 +2,14 @@
 
 ## Step 1: ASSESS CURRENT STATE
 ```bash
+git branch --show-current
 git status --porcelain
 git diff --name-only
 ```
+If not already on a feature branch:
+1. Check for uncommitted changes: If there are staged changes, ask Lucy what to do
+2. Create a new branch
+3. Switch to new branch
 
 ## Step 2: ANALYSE CHANGES BY TYPE
 Group unstaged changes into logical commits by examining:

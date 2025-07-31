@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+
+# ABOUTME: Cleans up Claude Code chat history to reduce file size
+# ABOUTME: Removes all conversation history while preserving settings and configuration
+
+set -euo pipefail
+
+# Configuration
+CLAUDE_CONFIG_FILE="$HOME/.claude.json"
+BACKUP_DIR="$HOME/.claude-backups"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Function to get file size in human readable format
+get_file_size() {
+    if [[ -f "$1" ]]; then
+        if command -v gstat >/dev/null 2>&1; then
+            gstat -c%s "$1" | numfmt --to=iec-i --suffix=B
+        elif stat -f%z "$1" >/dev/null 2>&1; then
+            # macOS stat
+            stat -f%z "$1" | numfmt --to=iec-i --suffix=B 2>/dev/null || stat -f%z "$1"
+        else
+            # Fallback for basic file size
+            ls -lh "$1" | awk '{print $5}'
+        fi
+    else
+        echo "0B"
+    fi
+}
+
+# Function to create backup
+create_backup() {
+    if [[ -f "$CLAUDE_CONFIG_FILE" ]]; then
+        mkdir -p "$BACKUP_DIR"
+        local backup_file="$BACKUP_DIR/claude-$(date +%Y%m%d-%H%M%S).json"
+        cp "$CLAUDE_CONFIG_FILE" "$backup_file"
+        print_status "Backup created: $backup_file"
+    fi
+}
+
+# Function to clean history using jq
+clean_history_jq() {
+    local temp_file
+    temp_file=$(mktemp)
+    
+    # Use jq to remove all history arrays while preserving everything else
+    jq 'walk(if type == "object" and has("history") then del(.history) else . end)' "$CLAUDE_CONFIG_FILE" > "$temp_file"
+    
+    if [[ $? -eq 0 ]]; then
+        mv "$temp_file" "$CLAUDE_CONFIG_FILE"
+        return 0
+    else
+        rm -f "$temp_file"
+        return 1
+    fi
+}
+
+# Function to clean history manually (fallback if jq fails)
+clean_history_manual() {
+    local temp_file
+    temp_file=$(mktemp)
+    
+    # Read the JSON and manually remove history arrays
+    python3 -c "
+import json
+import sys
+
+try:
+    with open('$CLAUDE_CONFIG_FILE', 'r') as f:
+        data = json.load(f)
+    
+    # Recursively remove 'history' keys from all objects
+    def remove_history(obj):
+        if isinstance(obj, dict):
+            if 'history' in obj:
+                obj['history'] = []
+            for value in obj.values():
+                remove_history(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                remove_history(item)
+    
+    remove_history(data)
+    
+    with open('$temp_file', 'w') as f:
+        json.dump(data, f, indent=2)
+    
+    print('SUCCESS')
+except Exception as e:
+    print(f'ERROR: {e}', file=sys.stderr)
+    sys.exit(1)
+" && mv "$temp_file" "$CLAUDE_CONFIG_FILE" || { rm -f "$temp_file"; return 1; }
+}
+
+# Main function
+main() {
+    print_status "Claude Code History Cleanup Tool"
+    echo
+    
+    # Check if config file exists
+    if [[ ! -f "$CLAUDE_CONFIG_FILE" ]]; then
+        print_error "Claude config file not found: $CLAUDE_CONFIG_FILE"
+        exit 1
+    fi
+    
+    # Show current file size
+    local before_size
+    before_size=$(get_file_size "$CLAUDE_CONFIG_FILE")
+    print_status "Current file size: $before_size"
+    
+    # Create backup
+    if [[ "${1:-}" != "--no-backup" ]]; then
+        create_backup
+    fi
+    
+    # Clean history
+    print_status "Cleaning chat history..."
+    
+    if command -v jq >/dev/null 2>&1; then
+        if clean_history_jq; then
+            print_status "History cleaned using jq"
+        else
+            print_warning "jq method failed, trying Python fallback..."
+            if clean_history_manual; then
+                print_status "History cleaned using Python fallback"
+            else
+                print_error "Failed to clean history with both methods"
+                exit 1
+            fi
+        fi
+    else
+        if clean_history_manual; then
+            print_status "History cleaned using Python"
+        else
+            print_error "Failed to clean history. Please install jq or ensure Python3 is available"
+            exit 1
+        fi
+    fi
+    
+    # Show new file size
+    local after_size
+    after_size=$(get_file_size "$CLAUDE_CONFIG_FILE")
+    print_status "New file size: $after_size"
+    
+    echo
+    print_status "✅ Claude history cleanup completed successfully!"
+    
+    # Clean up old backups (keep last 5)
+    if [[ -d "$BACKUP_DIR" ]]; then
+        find "$BACKUP_DIR" -name "claude-*.json" -type f | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
+    fi
+}
+
+# Show help
+show_help() {
+    cat << EOF
+Claude Code History Cleanup Tool
+
+Usage: $(basename "$0") [OPTIONS]
+
+OPTIONS:
+    --no-backup    Skip creating a backup before cleanup
+    --help         Show this help message
+
+This script removes all chat history from your Claude Code configuration file
+while preserving all settings and other configuration data.
+
+The script will:
+1. Create a timestamped backup (unless --no-backup is specified)
+2. Remove all 'history' arrays from project configurations
+3. Show before/after file sizes
+4. Keep only the last 5 backups (automatic cleanup)
+
+EOF
+}
+
+# Parse arguments
+case "${1:-}" in
+    --help|-h)
+        show_help
+        exit 0
+        ;;
+    *)
+        main "$@"
+        ;;
+esac
