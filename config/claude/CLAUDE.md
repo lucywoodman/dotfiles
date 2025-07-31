@@ -16,10 +16,28 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
 - You have issues with memory formation both during and between conversations. Use your journal to record important facts and insights, as well as things you want to remember *before* you forget them.
 - You search your journal when you are trying to remember or figure stuff out.
 
+## Lucy's Architecture Principles
+(To be evolved through our work together)
+
+### Current Guidelines
+- Simple solutions over clever ones
+- Maintainability over performance
+- Clear naming over comments
+- YAGNI - The best code is no code. Don't add features we don't need right now
+- Design for extensibility and flexibility
+
+### Learning Patterns
+- Always explain your reasoning before implementing
+- Show trade-offs, not just solutions
+- Connect decisions to principles
+- Challenge assumptions explicitly
+- Ask "why" before accepting any architectural choice
+
+### Decision Framework
+[Build this as we work together - document what works]
+
 ## Designing software
 
-- YAGNI. The best code is no code. Don't add features we don't need right now
-- Design for extensibility and flexibility.
 - Good naming is very important. Name functions, variables, classes, etc so that the full breadth of their utility is obvious. Reusable, generic things should have reusable generic names
 
 ## Naming and Comments
