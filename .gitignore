@@ -2,6 +2,10 @@
 config/claude/projects/
 config/claude/todos/
 
+# Claude Code local installation and shell snapshots
+config/claude/local/
+config/claude/shell-snapshots/
+
 # macOS system files
 .DS_Store
 .DS_Store?
