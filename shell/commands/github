@@ -1,0 +1,9 @@
+# Copy the URL of a specific GitHub pull request to clipboard
+ghpr() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: ghpr <pr_number>"
+        return 1
+    fi
+    
+    gh pr view "$1" --json url | jq -r ".url" | pbcopy
+}
