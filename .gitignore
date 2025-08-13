@@ -1,6 +1,7 @@
-# Personal Claude Code data - contains conversation history and todos
+# Personal Claude Code data
 config/claude/projects/
 config/claude/todos/
+config/claude/settings.json
 
 # Claude Code local installation and shell snapshots
 config/claude/local/
