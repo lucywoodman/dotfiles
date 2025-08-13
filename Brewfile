@@ -39,8 +39,7 @@ brew 'mas'        # Mac App Store manager (buggy)
 
 # GUI Applications
 # Development
-cask 'alacritty'                # GPU-accelerated terminal
-cask 'docker'                   # Container platform
+cask 'docker-desktop'           # Containerisation
 cask 'ghostty'                  # Terminal emulator
 
 # Productivity
