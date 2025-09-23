@@ -1,0 +1,1 @@
+Use the Task tool to launch the debug-reasoner agent to walk through the reasoning for $ARGUMENTS like teaching a junior developer. Focus on the thinking process, hypothesis formation, and systematic debugging approach.
