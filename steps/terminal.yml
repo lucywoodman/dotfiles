@@ -24,6 +24,7 @@
     ~/.hushlogin: config/hushlogin
     ~/.zplugrc: config/zplugrc
     ~/.tmux.conf: config/tmux.conf
+    ~/.dprint.json: config/dprint.json
 
     # Git:
     ~/.gitconfig: config/gitconfig
@@ -31,9 +32,9 @@
     ~/.gitattributes_global: config/gitattributes
 
     # Editors:
-    ~/.config/helix/config.toml:
-      create: true
-      path: config/helix.toml
+    ~/.config/helix:
+      force: true
+      path: config/helix
 
     # Claude Code:
     ~/.claude:
