@@ -144,11 +144,15 @@ If you use Alfred:
 2. Set up your Alfred preferences sync
 
 ### Claude Code
-Claude Code is configured with local installation and custom commands:
+Claude Code is configured with local installation, AI agents, and custom workflows:
 1. Local installation available via `claude` alias
-2. Configuration templates in `config/claude/`
-3. Custom commands for development workflow
-4. Chat history cleanup utility: `claude-cleanup`
+2. **AI Agents** for autonomous code analysis:
+   - `/review` - Sandy Metz-style code reviews with educational feedback
+   - `/debug` - Teaching-focused debugging with systematic hypothesis testing
+   - `/design` - Architectural analysis using expert perspectives (Fowler/Hickey/Uncle Bob)
+3. **Custom Commands** for development workflow in `config/claude/commands/`
+4. **Statusline** showing current repo and git branch
+5. Chat history cleanup utility: `claude-cleanup`
 
 ### Obsidian
 1. Install Obsidian through the Brewfile

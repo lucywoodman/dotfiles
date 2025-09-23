@@ -127,6 +127,29 @@ The Brewfile contains 65+ packages organized by category:
 - **Containers**: Docker with compose aliases
 - **Cloud**: AWS CLI, Kubernetes tools
 
+## Claude Code Integration
+
+This repository includes custom agents and slash commands for enhanced Claude Code workflows:
+
+### AI Agents (in `config/claude/agents/`)
+- **code-reviewer**: Sandy Metz-style code reviews with educational feedback
+- **debug-reasoner**: Teaching-focused debugging with systematic hypothesis testing
+- **design-reviewer**: Architectural analysis using Fowler/Hickey/Uncle Bob perspectives
+- **commit-message-writer**: Conventional commit message generation
+- **php-pro**: Advanced PHP development patterns and best practices
+
+### Slash Commands (in `config/claude/commands/`)
+- `/review <PR#>` - Launch code-reviewer agent for pull request analysis
+- `/debug <target>` - Launch debug-reasoner agent for systematic problem-solving
+- `/design <target>` - Launch design-reviewer agent for architectural evaluation
+- `/analyse <target>` - Comprehensive problem analysis workflow
+- `/create-pr` - Pull request creation workflow
+- `/commit-changes` - Structured commit process
+
+### Custom Statusline
+- Shows current repository and git branch: `📁 repo-name | 🌿 branch-name`
+- Script located at `config/claude/statusline.sh`
+
 ## Important Notes
 
 - Requires macOS with Homebrew pre-installed
@@ -134,3 +157,4 @@ The Brewfile contains 65+ packages organized by category:
 - All configurations are symlinked, not copied
 - System preferences are applied via macos/settings.sh script
 - Git submodules are used for dotbot and plugins
+- Claude Code agents provide autonomous reasoning and contextual analysis
