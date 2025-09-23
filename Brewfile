@@ -21,10 +21,12 @@ brew 'pre-commit' # Git hooks manager
 brew 'tig'        # Text-mode interface for git
 
 # Development Tools
+brew 'bruno'      # IDE for exploring and testing APIs
 brew 'direnv'     # Directory-specific environment variables
 brew 'helix'      # Text editor
 brew 'hexyl'      # Command-line hex viewer
 brew 'jq'         # JSON processor
+brew 'dprint'     # Code formatter
 
 # Version Managers
 brew 'nvm'        # Node.js version manager
@@ -46,13 +48,14 @@ cask 'ghostty'                  # Terminal emulator
 cask '1password'    # Password manager
 cask 'alfred@4'     # Spotlight replacement
 cask 'anytype'      # Note taking app
-cask 'arc'          # Browser
-cask 'cleanshot'    # Screenshot tool
-cask 'obsidian'     # Markdown note taking app
-cask 'proton-drive' # Cloud storage
+cask 'arc'          # Chrome based browser
+cask 'cleanshot'    # Screen capturing tool
+cask 'obsidian'     # Markdown knowledge base
+cask 'raycast'      # Productivity tool
 cask 'rectangle'    # Window manager
 cask 'rocket'       # Anywhere emoji picker
 cask 'transnomino'  # File renaming tool
+cask 'zen'          # Firefox based browser
 
 # Mac App Store
 mas 'Boop', id: 1518425043          # Clipboard manager
