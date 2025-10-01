@@ -1,3 +1,9 @@
+# List all custom functions with descriptions
+list_functions() {
+	grep -E '^# |^[a-zA-Z0-9_]*\(\)' ~/.dotfiles/shell/.functions |
+	sed 'N;s/# \(.*\)\n\(.*\)/\2 - \1/'
+} 
+
 # Remove macOS system files and hidden directories from current directory
 dot_clean() {
 	find . -name ".DS_Store" -delete 2>/dev/null
