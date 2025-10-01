@@ -8,11 +8,11 @@ alias dotfiles="cd $HOME/.dotfiles"
 alias library="cd $HOME/Library"
 alias notes="cd $HOME/notes"
 alias workspace="cd $HOME/workspace"
+alias downloads="cd /private/tmp/downloads"
 
 # === Claude Code ===
 alias claude="$HOME/.claude/local/claude"
 alias claude-cleanup="$HOME/.dotfiles/scripts/claude-cleanup"
-alias downloads="cd /private/tmp/downloads"
 
 # === System Commands ===
 # Sorts directories in top:
@@ -33,14 +33,18 @@ alias dcb="docker compose build"
 alias dcl="docker compose logs -f"
 
 # === Kubernetes Aliases ===
-alias k8="kubectl"
+alias k="kubectl"
+alias kontainers="kubectl get pods -o=jsonpath='{range .items[*]}{\"\n\n\"}{.metadata.name}{\":\t\"}{range .status.containerStatuses[*]}{\"\n\t\"}{.ready}{\" \"}{.name}{\"  \trestarts:\"}{.restartCount}{\"\tstartedAt: \"}{.state.running.startedAt}{end}{end}' | sed -e 's/true/✅/g' -e 's/false/❌/g'"
 
-# === Tmux Aliases ===
-alias tmuxdev='tmux attach -t dev || tmux new-session -s dev'
-alias tmuxdotfiles='tmux attach -t dotfiles || tmux new-session -s dotfiles'
-alias tmuxoverdrive='tmux attach -t overdrive || tmux new-session -s overdrive'
-alias tmuxjqs='tmux attach -t jqs || tmux new-session -s jqs'
-alias tmuxst2='tmux attach -t st2 || tmux new-session -s st2'
+# === Terraform Aliases ===
+alias tf="terraform"
+alias tfi='tf init'
+alias tff='tf fmt'
+alias tfv='tf validate'
+alias tfp='tf plan'
+alias tfa='tf apply'
+alias tfd='tf destroy'
+alias tfo='tf output'
 
 # Load private aliases if they exist
 [ -f "$HOME/.private/private.aliases" ] && source "$HOME/.private/private.aliases"

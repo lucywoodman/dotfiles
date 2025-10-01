@@ -61,3 +61,10 @@ z () {
   # I need this function to setup custom code completion for `zoxide`.
   \__zoxide_z "$@"
 }
+
+
+# === Custom Functions ===
+# Load shell functions for directory management, git operations, and file utilities
+if [[ -f "$HOME/.dotfiles/shell/.functions" ]]; then
+  source "$HOME/.dotfiles/shell/.functions"
+fi
