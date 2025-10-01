@@ -1,14 +1,22 @@
 ---
 
+# Create directories
+- create:
+    - ~/notes
+    - ~/workspace
+    - ~/.private
+
+# Clean home directory
 - clean: ['~']
 
-# See https://ohmyz.sh
+# Install Oh-My-Zsh
 - shell:
   - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
     description: Install Oh-My-Zsh
     stdout: true
     stderr: true
 
+# Symlink configuration files
 - link:
     # Terminal
     ~/.shell:
@@ -41,3 +49,10 @@
       force: true
       path: config/claude
 
+# Install dependencies
+- brewfile:
+    file: Brewfile
+    no-upgrade: true
+    stdout: true
+    stderr: true
+    include: ['tap', 'brew', 'cask', 'mas']
