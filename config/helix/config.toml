@@ -1,25 +1,44 @@
-theme = "onedark"
+theme = "everforest_dark"
 
 [keys.normal]
-y = "yank_main_selection_to_clipboard"
-p = "paste_clipboard_before"
+  y = "yank_main_selection_to_clipboard"
+  p = "paste_clipboard_before"
 
 [editor]
-mouse = false
-end-of-line-diagnostics = "hint"
-
-[editor.inline-diagnostics]
-cursor-line = "warning"
-
-[editor.cursor-shape]
-insert = "bar"
-normal = "block"
-select = "underline"
+  cursorline = true
+  bufferline = "always"
+  insert-final-newline = true
+  end-of-line-diagnostics = "hint"
 
 [editor.file-picker]
-hidden = false
+  hidden = false
+
+[editor.statusline]
+  left = ["mode", "spinner", "version-control"]
+  center = ["file-name", "file-modification-indicator"]
+  right = ["file-type", "selections", "position", "file-encoding"]
+  separator = "|"
+  mode.normal = "NORMAL"
+  mode.insert = "INSERT"
+  mode.select = "SELECT"
+
+[editor.indent-guides]
+  render = true
+  character = "|"
+  skip-level = 1
+
+[editor.lsp]
+  display-messages = true
+  display-inlay-hints = true
+
+[editor.inline-diagnostics]
+  cursor-line = "warning"
+
+[editor.cursor-shape]
+  insert = "bar"
+  normal = "block"
+  select = "underline"
 
 [editor.soft-wrap]
-enable = true
-wrap-at-text-width = true
-
+  enable = true
+  wrap-at-text-width = true
