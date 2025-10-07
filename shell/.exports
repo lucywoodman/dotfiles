@@ -45,13 +45,6 @@ export PAGER='less'
 
 # === Version & package managers ===
 
-# nvm:
-export NVM_DIR="$HOME/.nvm"
-[ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && source "$(brew --prefix)/opt/nvm/nvm.sh"
-
-# chruby:
-[ -s "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh" ] && source "$(brew --prefix)/opt/chruby/share/chruby/chruby.sh"
-
 # rye:
 [ -s "$HOME/.rye/env" ] && source "$HOME/.rye/env"
 
