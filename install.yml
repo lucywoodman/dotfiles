@@ -7,14 +7,14 @@
     - ~/.private
 
 # Clean home directory
-- clean: ['~']
+- clean: ["~"]
 
 # Install Oh-My-Zsh
 - shell:
-  - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
-    description: Install Oh-My-Zsh
-    stdout: true
-    stderr: true
+    - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+      description: Install Oh-My-Zsh
+      stdout: true
+      stderr: true
 
 # Symlink configuration files
 - link:
@@ -37,7 +37,6 @@
     # Git:
     ~/.gitconfig: config/gitconfig
     ~/.gitignore_global: config/gitignore
-    ~/.gitattributes_global: config/gitattributes
 
     # Editors:
     ~/.config/helix:
@@ -49,10 +48,15 @@
       force: true
       path: config/claude
 
+    # Google Cloud Configurations:
+    ~/.config/gcloud/configurations:
+      force: true
+      path: config/gcloud-configs
+
 # Install dependencies
 - brewfile:
     file: Brewfile
     no-upgrade: true
     stdout: true
     stderr: true
-    include: ['tap', 'brew', 'cask', 'mas']
+    include: ["tap", "brew", "cask", "mas"]
