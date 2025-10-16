@@ -1,0 +1,7 @@
+[core]
+account = your-email@example.com
+project = your-project-id
+
+# Optional: for service account impersonation
+# [auth]
+# impersonate_service_account = sa@project.iam.gserviceaccount.com

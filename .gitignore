@@ -18,6 +18,8 @@ Thumbs.db
 
 # Private configuration files
 .private/
+config/gcloud-configs/*
+!config/gcloud-configs/config_example
 
 # Temporary files
 *.tmp
