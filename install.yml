@@ -30,7 +30,6 @@
       path: config/zshenv
 
     ~/.hushlogin: config/hushlogin
-    ~/.zplugrc: config/zplugrc
     ~/.dprint.json: config/dprint.json
 
     # Git:
