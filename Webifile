@@ -1,0 +1,22 @@
+# Webi Package Manager
+# Packages installed via https://webinstall.dev
+# Install with: ./scripts/install-webi.sh
+
+# Core CLI Tools
+bat         # Modern cat with syntax highlighting
+fzf         # Fuzzy finder for command line
+lsd         # Modern ls with git integration (replaces eza)
+
+# Git Tools
+gh          # GitHub CLI
+delta       # Better diff viewer
+
+# Development Tools
+jq          # JSON processor
+shellcheck  # Shell script static analysis tool
+
+# Cloud & Container Tools
+k9s         # Kubernetes TUI
+kubectx     # Kubernetes context switcher
+kubens      # Kubernetes namespace switcher (bundled with kubectx)
+terraform   # Infrastructure as code
