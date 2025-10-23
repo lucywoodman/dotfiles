@@ -31,7 +31,6 @@
 
     ~/.hushlogin: config/hushlogin
     ~/.zplugrc: config/zplugrc
-    ~/.tmux.conf: config/tmux.conf
     ~/.dprint.json: config/dprint.json
 
     # Git:
@@ -60,3 +59,10 @@
     stdout: true
     stderr: true
     include: ["tap", "brew", "cask", "mas"]
+
+# Install webi packages
+- shell:
+    - command: ./scripts/install-webi.sh
+      description: Install packages from Webifile using webi
+      stdout: true
+      stderr: true
