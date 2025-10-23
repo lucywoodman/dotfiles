@@ -22,14 +22,16 @@ Restart your terminal when complete.
 ```
 config/          # App configurations (git, helix, claude, etc.)
 shell/           # Shell customizations (.aliases, .exports, .functions, etc.)
+scripts/         # Installation and maintenance scripts
 macos/           # macOS system settings
 install.yml      # Dotbot configuration
-Brewfile         # Package management
+Brewfile         # Homebrew package management
+Webifile         # Webi package management
 ```
 
 ## Key Features
 
-- **Modern CLI tools**: `bat`, `eza`, `fzf`, `zoxide`, `htop`
+- **Modern CLI tools**: `bat`, `lsd`, `fzf`, `zoxide`, `htop`, `shellcheck`
 - **Shell functions**: `list_functions` to see all available
 - **Development stack**: PHP, Node.js, Python, Docker, Kubernetes, Terraform
 - **Productivity apps**: 1Password, Alfred, Arc, Obsidian, Rectangle
@@ -46,6 +48,7 @@ Store sensitive configs in 1Password:
 
 ```bash
 brew update && brew upgrade    # Update packages
+./scripts/install-webi.sh      # Update webi packages
 brew cu                        # Update GUI apps
 git pull && ./install          # Update dotfiles
 ```
