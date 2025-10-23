@@ -14,15 +14,17 @@ This is a personal dotfiles repository for macOS that automates development envi
 ./install
 
 # Individual components (run from repo root)
-./dotbot/bin/dotbot -d . --plugin-dir dotbot-brewfile -c steps/directories.yml
-./dotbot/bin/dotbot -d . --plugin-dir dotbot-brewfile -c steps/terminal.yml  
-./dotbot/bin/dotbot -d . --plugin-dir dotbot-brewfile -c steps/dependencies.yml
+./dotbot/bin/dotbot -d . --plugin-dir dotbot-brewfile -c install.yml
+./scripts/install-webi.sh
 ```
 
 ### Maintenance Commands
 ```bash
 # Update packages
 brew update && brew upgrade
+
+# Install/update webi packages
+./scripts/install-webi.sh
 
 # Update Oh My Zsh
 omz update
@@ -43,25 +45,29 @@ claude-cleanup
 ## Architecture
 
 ### Core Components
-- **dotbot**: Installation automation using YAML configs in `/steps`
-- **Brewfile**: Package management for CLI tools and GUI applications  
+- **dotbot**: Installation automation using YAML config in `install.yml`
+- **Brewfile**: Package management for CLI tools and GUI applications
+- **Webifile**: Package management for modern CLI tools via webinstall.dev
 - **Shell configs**: Modular zsh setup with Oh-My-Zsh
 - **Private configs**: Sensitive settings stored in 1Password
 
 ### Directory Structure
 ```
-├── config/          # App configuration files (git, helix, tmux, etc.)
+├── config/          # App configuration files (git, helix, etc.)
 ├── shell/           # Shell customizations (.aliases, .exports, etc.)
-├── steps/           # Dotbot YAML installation steps
+├── scripts/         # Installation and maintenance scripts
 ├── macos/           # macOS system preference scripts
 ├── dotbot/          # Dotbot submodule
-└── dotbot-brewfile/ # Homebrew plugin for dotbot
+├── dotbot-brewfile/ # Homebrew plugin for dotbot
+├── Brewfile         # Homebrew package definitions
+└── Webifile         # Webi package definitions
 ```
 
 ### Installation Flow
-1. **Directories** (`steps/directories.yml`): Creates `~/notes`, `~/workspace`, `~/.private`
-2. **Terminal** (`steps/terminal.yml`): Installs Oh-My-Zsh, symlinks configs
-3. **Dependencies** (`steps/dependencies.yml`): Installs packages via Brewfile
+1. **Directories**: Creates `~/notes`, `~/workspace`, `~/.private`
+2. **Terminal**: Installs Oh-My-Zsh, symlinks shell and app configs
+3. **Dependencies**: Installs packages via Brewfile (Homebrew)
+4. **Webi packages**: Installs modern CLI tools via Webifile (webinstall.dev)
 
 ## Key Aliases & Commands
 
@@ -100,11 +106,22 @@ These are loaded automatically if they exist but are not tracked in git.
 
 ## Package Management
 
-The Brewfile contains 65+ packages organized by category:
-- **CLI Tools**: bat, lsd, fzf, git-delta, jq, tmux, zellij, zoxide
-- **Development**: Docker, Ghostty, Helix
-- **Productivity**: 1Password, Alfred, Arc, Obsidian, Rectangle
+### Homebrew (Brewfile)
+Core packages for system services and GUI applications:
+- **CLI Tools**: htop, zoxide
+- **Development**: Docker, Helix, direnv, dprint
+- **Language Tools**: PHP, Node.js, AWS CLI
+- **Databases**: PostgreSQL, MySQL
+- **GUI Apps**: 1Password, Alfred, Arc, Obsidian, Rectangle
 - **Mac App Store**: Things 3, Dato, HazeOver
+
+### Webi (Webifile)
+Modern CLI tools installed via webinstall.dev:
+- **Core Tools**: bat (syntax highlighting), lsd (modern ls), fzf (fuzzy finder)
+- **Git Tools**: gh (GitHub CLI), delta (enhanced diff viewer)
+- **Development**: jq (JSON processor)
+- **Kubernetes**: k9s (TUI), kubectx/kubens (context switching)
+- **Infrastructure**: terraform (IaC)
 
 ## Git Configuration
 
@@ -122,10 +139,11 @@ The Brewfile contains 65+ packages organized by category:
 
 ## Development Tools
 
-- **Terminal**: Ghostty, tmux for session management
+- **Terminal**: Ghostty for terminal emulation
 - **Editor**: Helix text editor with custom configuration
 - **Containers**: Docker with compose aliases
-- **Cloud**: AWS CLI, Kubernetes tools
+- **Cloud**: AWS CLI, Kubernetes tools (k9s, kubectx, kubens)
+- **Version Control**: Git with delta pager, GitHub CLI (gh)
 
 ## Claude Code Integration
 
