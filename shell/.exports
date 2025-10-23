@@ -14,7 +14,7 @@ add_to_path() {
 
 
 # These path modifications should be first!
-add_to_path "$HOME/.local/bin"              # pipx binaries
+add_to_path "$HOME/.local/bin"              # webi binaries
 add_to_path "/usr/local/share/npm/bin"      # npm global
 add_to_path "$HOME/.composer/vendor/bin"     # global Composer tools
 add_to_path "$HOME/.node/bin"               # global Node binaries

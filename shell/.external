@@ -6,10 +6,8 @@
 # === fzf ===
 # https://github.com/junegunn/fzf
 
-if [[ ! "$PATH" == */opt/fzf/bin* ]]; then
-  export PATH="$PATH:$(brew --prefix)/opt/fzf/bin"
-
-  # Enable `fzf`:
+# Enable fzf shell integration (installed via webi)
+if command -v fzf >/dev/null 2>&1; then
   eval "$(fzf --zsh)"
 fi
 
