@@ -25,3 +25,11 @@ config/gcloud-configs/*
 *.tmp
 *.swp
 *~
+
+# Package manager directories
+node_modules/
+vendor/
+.pnp/
+.pnp.js
+bower_components/
+jspm_packages/
