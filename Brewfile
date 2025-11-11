@@ -2,10 +2,19 @@ tap 'buo/cask-upgrade' # Enables 'brew cu' to upgrade GUI apps
 
 # Core CLI Tools
 brew 'htop'       # Interactive process viewer
+brew 'jless'      # JSON viewer and processor
+brew 'lf'         # Terminal file manager
+brew 'lnav'       # Log file navigator and analyzer
+brew 'mosh'       # Mobile shell with intermittent connectivity
+brew 'pastel'     # Color manipulation and palette generation
+brew 'taskwarrior-tui' # Terminal UI for taskwarrior
+brew 'tz'         # Time zone aware calendar and clock
 brew 'zoxide'     # Shell extension to navigate your filesystem faster
+brew 'starship'   # Cross-shell prompt
 
 # Git Tools
 brew 'git'        # Version control
+brew 'gitui'      # Terminal UI for git
 brew 'pre-commit' # Git hooks manager
 
 # Development Tools
@@ -26,6 +35,7 @@ brew 'helm'       # Kubernetes package manager
 brew 'kustomize'  # Kubernetes configuration management
 brew 'terraform-ls' # Terraform language server
 brew 'docker'     # Container runtime
+brew 'ctop'       # Container monitoring
 
 # Databases
 brew 'postgresql@14' # PostgreSQL database
