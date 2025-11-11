@@ -1,3 +1,81 @@
+#!/bin/zsh
+
+# Uncomment for performance profiling
+# zmodload zsh/zprof
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Basics                                                                     ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+export OS="$(uname | tr '[:upper:]' '[:lower:]')"
+
+# Function to check if a program is available, optional: specify OS
+function __is_available {
+  prog="${1}"
+  os="${2}"
+
+  # Skip if OS requirement doesn't match current OS
+  if [ "${os}" != "" ] && [ "${os}" != "${OS}" ]
+  then 
+    return 1
+  fi
+
+  # Check if program exists in PATH
+  type "${prog}" > /dev/null 
+  return "$?"
+}
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Ghostty Terminal Integration                                               ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# Ghostty terminal integration for enhanced shell features
+if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
+  builtin source \
+    "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
+fi
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Shell History Configuration                                                ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# History file location and size settings
+export HISTFILE="${HOME}/.zsh_history"
+export HISTCONTROL="ignoredups:ignorespace"        # Ignore duplicates and commands starting with space
+export HISTSIZE="100000"                           # Number of commands to keep in memory
+export HISTFILESIZE="200000"                       # Number of commands to keep in history file
+export SAVEHIST="${HISTSIZE}"                      # Number of commands to save to file
+
+# Zsh history options for better history management
+setopt HIST_IGNORE_ALL_DUPS     # Don't record duplicate commands
+setopt HIST_IGNORE_SPACE        # Don't record commands starting with space
+setopt EXTENDED_HISTORY         # Record timestamp and duration
+setopt HIST_EXPIRE_DUPS_FIRST   # Expire duplicates first when trimming history
+setopt HIST_IGNORE_DUPS         # Don't record immediately repeated commands
+setopt HIST_VERIFY              # Show command before executing from history
+setopt SHARE_HISTORY            # Share history across all sessions
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Terminal and Editor Configuration                                          ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# Terminal settings for proper color and character support
+export TERM="xterm-256color"
+export COLUMNS="80"
+
+# Default editor (will be updated to nvim if available)
+export EDITOR="vim"
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Application Configuration                                                  ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# Timezone list for tz tool (global timezone display)
+# https://github.com/oz/tz/
+export TZ_LIST="\
+America/Los_Angeles;America/Chicago;\
+America/New_York;Australia/Perth;"
+
 # Performance optimizations
 DISABLE_AUTO_UPDATE="true"
 DISABLE_MAGIC_FUNCTION="true"
@@ -34,7 +112,6 @@ if ! zgen saved; then
   zgen load Aloxaf/fzf-tab
   zgen load zsh-users/zsh-syntax-highlighting
   zgen load MichaelAquilina/zsh-you-should-use
-  zgen load spaceship-prompt/spaceship-prompt spaceship
 
   zgen save
 fi
@@ -59,3 +136,15 @@ fi
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Stoicism                                                                   ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+fortune ~/.local/share/fortune
+printf "\n"
+
+__is_available starship \
+&& eval "$(starship init zsh)"
+
+# zprof
