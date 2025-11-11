@@ -51,6 +51,11 @@
       force: true
       path: config/gcloud-configs
 
+    # Starship:
+    ~/.config/starship.toml:
+      force: true
+      path: config/starship.toml
+
 # Install dependencies
 - brewfile:
     file: Brewfile
