@@ -10,10 +10,6 @@ alias notes="cd $HOME/notes"
 alias workspace="cd $HOME/workspace"
 alias downloads='cd /private/tmp/downloads'
 
-# === Claude Code ===
-alias claude="$HOME/.claude/local/claude"
-alias claude-cleanup="$HOME/.dotfiles/scripts/claude-cleanup"
-
 # === System Commands ===
 # Sorts directories in top:
 alias ll='lsd -la --group-dirs first'
@@ -25,7 +21,7 @@ alias cat='bat --paging never --decorations never --plain'
 alias tree='lsd --tree'
 
 # Lock the screen (when going AFK)
-alias afk='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+alias afk='pmset displaysleepnow'
 
 # === Docker Aliases ===
 alias dcu='docker compose up -d'
