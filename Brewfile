@@ -1,38 +1,55 @@
 tap 'buo/cask-upgrade' # Enables 'brew cu' to upgrade GUI apps
 
 # Core CLI Tools
+brew 'bat'        # Modern cat with syntax highlighting
+brew 'catimg'     # Image to terminal renderer (for fzf previews)
+brew 'fd'         # Modern find alternative (required by fzf)
+brew 'fortune'    # Random fortune cookie messages
+brew 'fzf'        # Fuzzy finder
+brew 'hexyl'      # Hex viewer (for fzf previews)
 brew 'htop'       # Interactive process viewer
 brew 'jless'      # JSON viewer and processor
+brew 'jq'         # JSON processor
 brew 'lf'         # Terminal file manager
 brew 'lnav'       # Log file navigator and analyzer
+brew 'lsd'        # Modern ls with git integration
 brew 'mosh'       # Mobile shell with intermittent connectivity
 brew 'pastel'     # Color manipulation and palette generation
+brew 'ripgrep'    # Fast grep alternative
+brew 'starship'   # Cross-shell prompt
 brew 'taskwarrior-tui' # Terminal UI for taskwarrior
 brew 'tz'         # Time zone aware calendar and clock
-brew 'zoxide'     # Shell extension to navigate your filesystem faster
-brew 'starship'   # Cross-shell prompt
+brew 'watch'      # Execute command periodically
+brew 'zoxide'     # Shell extension to navigate faster
 
 # Git Tools
 brew 'git'        # Version control
+brew 'git-delta'  # Better diff viewer
+brew 'git-filter-repo' # Git history rewriting tool
 brew 'gitui'      # Terminal UI for git
+brew 'gh'         # GitHub CLI
 brew 'pre-commit' # Git hooks manager
 
 # Development Tools
 brew 'direnv'     # Directory-specific environment variables
-brew 'helix'      # Text editor
 brew 'dprint'     # Code formatter
+brew 'glow'       # Markdown renderer with syntax highlighting
+brew 'go-task'    # Modern task runner (replaces make)
+brew 'helix'      # Text editor
+brew 'shellcheck' # Shell script static analysis
 brew 'taplo'      # TOML formatter
 
 # Language Tools & Version Managers
-brew 'php'        # PHP language
+brew 'mise'       # Unified runtime version manager (replaces nvm, rbenv, pyenv, etc.)
+brew 'bison'      # Parser generator (required for PHP compilation)
+brew 're2c'       # Lexer generator (required for PHP compilation)
+brew 'php'        # PHP language (managed by Homebrew, not mise due to build complexity)
 brew 'php@8.1'    # PHP 8.1
 brew 'composer'   # PHP package manager
 
-# Cloud & Container Tools
+# Cloud & Container Tools (terraform, kubectl, helm, k9s now managed by mise)
 brew 'awscli'     # AWS command line
-brew 'stern'      # Kubernetes log tailing
-brew 'helm'       # Kubernetes package manager
-brew 'kustomize'  # Kubernetes configuration management
+brew 'kubectx'    # Kubernetes context switcher
 brew 'terraform-ls' # Terraform language server
 brew 'docker'     # Container runtime
 brew 'ctop'       # Container monitoring
@@ -41,31 +58,32 @@ brew 'ctop'       # Container monitoring
 brew 'postgresql@14' # PostgreSQL database
 brew 'mysql@8.4'  # MySQL database
 
-
 # GUI Applications Managers
 brew 'mas'        # Mac App Store manager (buggy)
 
 # GUI Applications
 # Development
+cask 'bruno'                    # API testing tool
+cask 'claude-code'              # AI coding assistant
+cask 'datagrip'                 # Database IDE
 cask 'docker-desktop'           # Container development
 cask 'ghostty'                  # Terminal emulator
-cask 'bruno'                    # API testing tool
+cask 'local'                    # WordPress development
+cask 'sublime-merge'            # Git client
+cask 'sublime-text'             # Text editor
 cask 'visual-studio-code'       # Code editor
 cask 'zed'                      # Fast code editor
-cask 'sublime-text'             # Text editor
-cask 'sublime-merge'            # Git client
-cask 'datagrip'                 # Database IDE
-cask 'local'                    # WordPress development
 
 # Productivity
 cask '1password'    # Password manager
 cask 'alfred@4'     # Spotlight replacement
-cask 'arc'          # Chrome based browser
+cask 'arc'          # Chrome-based browser
 cask 'cleanshot'    # Screen capturing tool
 cask 'obsidian'     # Markdown knowledge base
 cask 'raycast'      # Productivity tool
 cask 'rectangle'    # Window manager
 cask 'rocket'       # Anywhere emoji picker
+cask 'slack'        # Team communication
 cask 'transnomino'  # File renaming tool
 
 # Mac App Store (mas tool is unreliable but useful for documentation)
