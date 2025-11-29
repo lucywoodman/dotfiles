@@ -1,12 +1,3 @@
-# Personal Claude Code data
-config/claude/projects/
-config/claude/todos/
-config/claude/settings.json
-
-# Claude Code local installation and shell snapshots
-config/claude/local/
-config/claude/shell-snapshots/
-
 # macOS system files
 .DS_Store
 .DS_Store?
@@ -18,18 +9,10 @@ Thumbs.db
 
 # Private configuration files
 .private/
-config/gcloud-configs/*
-!config/gcloud-configs/config_example
+dotconfig/claude/settings.json
 
 # Temporary files
 *.tmp
 *.swp
 *~
 
-# Package manager directories
-node_modules/
-vendor/
-.pnp/
-.pnp.js
-bower_components/
-jspm_packages/
