@@ -1,1 +1,0 @@
-Use the Task tool to launch the design-reviewer agent to conduct a comprehensive design review of $ARGUMENTS. Focus on architectural patterns, design principles, scalability, and maintainability with appropriate expert perspective (Fowler/Hickey/Uncle Bob).

@@ -26,7 +26,14 @@ function __is_available {
 }
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ Ghostty Terminal Integration                                               ║
+# ║ Exports                                                                    ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ Ghostty                                                                    ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
 # Ghostty terminal integration for enhanced shell features
@@ -36,11 +43,11 @@ if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
 fi
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ Shell History Configuration                                                ║
+# ║ General config                                                             ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
 # History file location and size settings
-export HISTFILE="${HOME}/.zsh_history"
+export HISTFILE="${XDG_STATE_HOME}/zsh/history"
 export HISTCONTROL="ignoredups:ignorespace"        # Ignore duplicates and commands starting with space
 export HISTSIZE="100000"                           # Number of commands to keep in memory
 export HISTFILESIZE="200000"                       # Number of commands to keep in history file
@@ -55,19 +62,18 @@ setopt HIST_IGNORE_DUPS         # Don't record immediately repeated commands
 setopt HIST_VERIFY              # Show command before executing from history
 setopt SHARE_HISTORY            # Share history across all sessions
 
-# ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ Terminal and Editor Configuration                                          ║
-# ╚════════════════════════════════════════════════════════════════════════════╝
-
 # Terminal settings for proper color and character support
 export TERM="xterm-256color"
 export COLUMNS="80"
+
+export TERMINFO="${XDG_DATA_HOME}/terminfo"
+export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
 
 # Default editor (will be updated to nvim if available)
 export EDITOR="vim"
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ Application Configuration                                                  ║
+# ║ Programs & tools                                                           ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
 # Timezone list for tz tool (global timezone display)
@@ -76,6 +82,22 @@ export TZ_LIST="\
 America/Los_Angeles;America/Chicago;\
 America/New_York;Australia/Perth;"
 
+# ╔════════════════════════════════════════════════════════════════════════════╗
+# ║ ${PATH}                                                                    ║
+# ╚════════════════════════════════════════════════════════════════════════════╝
+
+# Docker (not docker-desktop)
+export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
+
+export NPM_CONFIG_INIT_MODULE="${XDG_CONFIG_HOME}/npm/config/npm-init.js"
+export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
+
+export _Z_DATA="$XDG_DATA_HOME/z"
+
+export LESSHISTFILE="${XDG_STATE_HOME}/lesshst"
+export MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
+export PSQL_HISTORY="${XDG_STATE_HOME}/psql_history"
+
 # Performance optimizations
 DISABLE_AUTO_UPDATE="true"
 DISABLE_MAGIC_FUNCTION="true"
@@ -83,16 +105,15 @@ DISABLE_COMPFIX="true"
 skip_global_compinit=1
 
 # Oh-My-Zsh setup
-export ZSH="$HOME/.oh-my-zsh"
-export ZSH_COMPDUMP="$HOME/.zcompdump"
+export ZSH="${XDG_DATA_HOME}/.oh-my-zsh"
 
 # Optimized completion loading - cache compinit for 24 hours
 autoload -Uz compinit
-for dump in ~/.zcompdump(N.mh+24); do
-  compinit -d "$ZSH_COMPDUMP"
+for dump in "$XDG_CACHE_HOME"/zsh/zcompdump-$ZSH_VERSION(N.mh+24); do
+  compinit -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
   break
 done
-compinit -C -d "$ZSH_COMPDUMP"
+compinit -C -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
 
 # History configuration
 CASE_SENSITIVE='false'
@@ -103,7 +124,15 @@ HIST_IGNORE_SPACE='true'
 source "$ZSH/oh-my-zsh.sh"
 
 
+# === Shell configuration ===
+# Load these BEFORE plugins so functions and completions are available
+[ -f "${XDG_CONFIG_HOME}/zsh/exports.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/exports.zsh"
+[ -f "${XDG_CONFIG_HOME}/zsh/aliases.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/aliases.zsh"
+[ -f "${XDG_CONFIG_HOME}/zsh/functions.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/functions.zsh"
+[ -f "${XDG_CONFIG_HOME}/zsh/completions.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/completions.zsh"
+
 # === Plugin management ===
+# Load after shell config so fzf-tab can use our settings and functions
 source ~/.zgen/zgen.zsh
 
 if ! zgen saved; then
@@ -116,18 +145,9 @@ if ! zgen saved; then
   zgen save
 fi
 
-# === Shell configuration ===
-source "$HOME/.shell/.exports"
-source "$HOME/.shell/.aliases"
-source "$HOME/.shell/.external"
-source "$HOME/.shell/.completions"
-
-# Load command functions
-if [[ -d "$HOME/.shell/commands" ]]; then
-  for cmd_file in "$HOME/.shell/commands"/*; do
-    [[ -f "$cmd_file" ]] && source "$cmd_file"
-  done
-fi
+# === External tools ===
+# Load external tools AFTER plugins
+[ -f "${XDG_CONFIG_HOME}/zsh/external.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/external.zsh"
 
 # === Local overrides ===
 if [[ -f "$HOME/.shell_env_local" ]]; then
@@ -146,5 +166,8 @@ printf "\n"
 
 __is_available starship \
 && eval "$(starship init zsh)"
+
+__is_available mise \
+&& eval "$(mise activate zsh)"
 
 # zprof
