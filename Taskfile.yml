@@ -54,6 +54,7 @@ tasks:
       - task: link:git
       - task: link:helix
       - task: link:claude
+      - task: link:mise
       - task: link:starship
       - task: link:misc
       - task: link:private
@@ -95,6 +96,12 @@ tasks:
     desc: Symlink starship configuration
     cmds:
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/starship.toml {{.XDG_CONFIG_HOME}}/starship.toml
+
+  link:mise:
+    desc: Symlink mise configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/mise
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/mise/config.toml {{.XDG_CONFIG_HOME}}/mise/config.toml
 
   link:misc:
     desc: Symlink miscellaneous config files

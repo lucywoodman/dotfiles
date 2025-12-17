@@ -1,0 +1,49 @@
+# Mise global configuration
+# This file defines default tool versions across all projects
+# Project-specific versions can override these in .mise.toml files
+
+# ============================================================================
+# Settings
+# ============================================================================
+[settings]
+experimental = true
+legacy_version_file = true  # Read .nvmrc, .node-version, .python-version, etc.
+always_keep_download = false
+always_keep_install = false
+plugin_autoupdate_last_check_duration = "7d"
+verbose = false
+asdf_compat = false
+jobs = 4  # parallel downloads/compiles
+yes = false  # Don't auto-confirm
+
+# ============================================================================
+# Global tool versions
+# ============================================================================
+# These versions will be used unless overridden by project-specific configs
+
+[tools]
+node = "lts"
+bun = "latest"
+python = "3.12"
+uv = "latest"
+go = "1.23"
+ruby = "3.3"
+terraform = "latest"
+kubectl = "latest"
+helm = "latest"
+k9s = "latest"
+gitleaks = "latest"
+kustomize = "latest"
+stern = "latest"
+aws-cli = "latest"
+
+# ============================================================================
+# Task definitions (optional - for common workflows)
+# ============================================================================
+[tasks.update]
+description = "Update all mise tools to latest versions"
+run = "mise upgrade"
+
+[tasks.clean]
+description = "Remove unused mise tool versions"
+run = "mise prune --yes"
