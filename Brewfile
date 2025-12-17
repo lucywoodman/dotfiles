@@ -13,7 +13,6 @@ brew 'jq'         # JSON processor
 brew 'lf'         # Terminal file manager
 brew 'lnav'       # Log file navigator and analyzer
 brew 'lsd'        # Modern ls with git integration
-brew 'mosh'       # Mobile shell with intermittent connectivity
 brew 'pastel'     # Color manipulation and palette generation
 brew 'ripgrep'    # Fast grep alternative
 brew 'starship'   # Cross-shell prompt
