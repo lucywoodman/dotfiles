@@ -70,6 +70,7 @@ cask 'ghostty'                  # Terminal emulator
 cask 'local'                    # WordPress development
 cask 'sublime-merge'            # Git client
 cask 'sublime-text'             # Text editor
+cask 'taproom'                  # Homebrew package manager GUI
 cask 'visual-studio-code'       # Code editor
 cask 'zed'                      # Fast code editor
 
