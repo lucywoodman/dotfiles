@@ -158,10 +158,28 @@ fi
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # ╔════════════════════════════════════════════════════════════════════════════╗
-# ║ Stoicism                                                                   ║
+# ║ Startup Display                                                           ║
 # ╚════════════════════════════════════════════════════════════════════════════╝
 
-fortune ~/.local/share/fortune
+# Colorful ASCII art banner
+__is_available figlet && __is_available lolcat \
+&& figlet -f slant "Shosple Colupis!" | lolcat
+
+printf "\n"
+
+# Mixed wisdom quotes
+if __is_available fortune; then
+  # Randomly select from stoic or diverse wisdom collection
+  local fortune_dir="$HOME/.local/share/fortune"
+  local fortune_files=("$fortune_dir/stoic" "$fortune_dir/wisdom")
+  local selected_fortune="${fortune_files[$RANDOM % ${#fortune_files[@]}]}"
+
+  # Word-wrap at 88 chars (leaving room for indent), then indent all lines
+  local quote=$(fortune "$selected_fortune" | fold -s -w 88 | sed 's/^/  /')
+  # Print with grey color (244) and italic ANSI codes
+  printf '\e[3;38;5;244m%s\e[0m\n' "$quote"
+fi
+
 printf "\n"
 
 __is_available starship \
