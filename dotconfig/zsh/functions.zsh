@@ -139,6 +139,32 @@ file_addition_year() {
 	git log --follow --format=%ad --date=format:%Y "$1" | tail -1
 }
 
+# List git stashes with detailed information about files changed
+git_stash_list() {
+	local stash_count
+	stash_count=$(git stash list | wc -l | xargs)
+
+	if [ "$stash_count" -eq 0 ]; then
+		echo "No stashes found"
+		return
+	fi
+
+	echo "Found $stash_count stash$(optional_s "$stash_count"):"
+	echo ""
+
+	git stash list | while IFS= read -r stash_line; do
+		local stash_id
+		stash_id=$(echo "$stash_line" | cut -d: -f1)
+
+		echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+		echo "$stash_line"
+		echo ""
+		echo "Files changed:"
+		git stash show --name-status "$stash_id" | sed 's/^/  /'
+		echo ""
+	done
+}
+
 # ═══════════════════════════════════════════════════════════════════════════
 # System Functions
 # ═══════════════════════════════════════════════════════════════════════════
