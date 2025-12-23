@@ -134,31 +134,6 @@ git_prune_branches() {
 	rm /tmp/branches_to_delete
 }
 
-# Alternative git branch pruning using helix editor
-prune_git_branches() {
-	local default_branch
-	default_branch=$(git_default_branch)
-
-	local merged_branches
-	merged_branches=$(git branch --merged "$default_branch" | grep -v "\* $default_branch" | grep -v "^  $default_branch$")
-
-	if [ -z "$merged_branches" ]; then
-		echo "No merged branches to prune"
-		return
-	fi
-
-	echo "$merged_branches" > /tmp/branches_to_delete
-	hx /tmp/branches_to_delete
-
-	while IFS= read -r branch; do
-		if [ -n "$branch" ]; then
-			git branch -d "$(echo "$branch" | xargs)"
-		fi
-	done < /tmp/branches_to_delete
-
-	rm /tmp/branches_to_delete
-}
-
 # Get the year a file was first added to git repository
 file_addition_year() {
 	git log --follow --format=%ad --date=format:%Y "$1" | tail -1
