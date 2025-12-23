@@ -4,8 +4,10 @@ tap 'buo/cask-upgrade' # Enables 'brew cu' to upgrade GUI apps
 brew 'bat'        # Modern cat with syntax highlighting
 brew 'catimg'     # Image to terminal renderer (for fzf previews)
 brew 'fd'         # Modern find alternative (required by fzf)
+brew 'figlet'     # ASCII art text generator
 brew 'fortune'    # Random fortune cookie messages
 brew 'fzf'        # Fuzzy finder
+brew 'lolcat'     # Rainbow colored text output
 brew 'hexyl'      # Hex viewer (for fzf previews)
 brew 'htop'       # Interactive process viewer
 brew 'jless'      # JSON viewer and processor
