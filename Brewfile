@@ -37,6 +37,8 @@ brew 'dprint'     # Code formatter
 brew 'glow'       # Markdown renderer with syntax highlighting
 brew 'go-task'    # Modern task runner (replaces make)
 brew 'helix'      # Text editor
+brew 'neovim'     # Text editor
+brew 'tree-sitter-cli' # Parser generator (required for nvim-treesitter)
 brew 'shellcheck' # Shell script static analysis
 brew 'taplo'      # TOML formatter
 
