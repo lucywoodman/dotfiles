@@ -53,6 +53,7 @@ tasks:
       - task: link:zsh
       - task: link:git
       - task: link:helix
+      - task: link:nvim
       - task: link:claude
       - task: link:mise
       - task: link:starship
@@ -82,6 +83,13 @@ tasks:
     cmds:
       - mkdir -p {{.XDG_CONFIG_HOME}}/helix
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/helix/* {{.XDG_CONFIG_HOME}}/helix/
+
+  link:nvim:
+    desc: Symlink neovim configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/nvim/lua
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/nvim/init.lua {{.XDG_CONFIG_HOME}}/nvim/init.lua
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/nvim/lua/plugins {{.XDG_CONFIG_HOME}}/nvim/lua/plugins
 
   link:claude:
     desc: Symlink Claude Code configuration
@@ -138,6 +146,7 @@ tasks:
       - rm -f {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
       - rm -f {{.XDG_CONFIG_HOME}}/zsh/external.zsh
       - rm -f {{.XDG_CONFIG_HOME}}/helix
+      - rm -rf {{.XDG_CONFIG_HOME}}/nvim
       - rm -f {{.XDG_CONFIG_HOME}}/starship.toml
       - rm -rf ~/.private
       - echo "Symlinks removed"
@@ -166,6 +175,10 @@ tasks:
 
           echo "=== Helix Editor ==="
           ls -la {{.XDG_CONFIG_HOME}}/helix 2>/dev/null || echo "⚠️  Helix config missing"
+          echo ""
+
+          echo "=== Neovim Editor ==="
+          ls -la {{.XDG_CONFIG_HOME}}/nvim/init.lua 2>/dev/null || echo "⚠️  Neovim config missing"
           echo ""
 
           echo "=== Claude Code ==="
