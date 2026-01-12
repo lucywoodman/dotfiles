@@ -85,7 +85,8 @@ cask 'arc'          # Chrome-based browser
 cask 'cleanshot'    # Screen capturing tool
 cask 'obsidian'     # Markdown knowledge base
 cask 'raycast'      # Productivity tool
-cask 'rectangle'    # Window manager
+cask 'aerospace'    # Tiling window manager
+# cask 'rectangle'    # Window manager (replaced by aerospace)
 cask 'rocket'       # Anywhere emoji picker
 cask 'slack'        # Team communication
 cask 'transnomino'  # File renaming tool

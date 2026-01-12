@@ -58,6 +58,7 @@ tasks:
       - task: link:mise
       - task: link:starship
       - task: link:misc
+      - task: link:aerospace
       - task: link:private
 
   link:zsh:
@@ -116,6 +117,12 @@ tasks:
     cmds:
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/dprint.json ~/.dprint.json
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/editorconfig ~/.editorconfig
+
+  link:aerospace:
+    desc: Symlink aerospace configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/aerospace
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/aerospace/aerospace.toml {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml
 
   link:private:
     desc: Symlink private files (not version controlled)
