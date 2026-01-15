@@ -129,6 +129,7 @@ source "$ZSH/oh-my-zsh.sh"
 [ -f "${XDG_CONFIG_HOME}/zsh/exports.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/exports.zsh"
 [ -f "${XDG_CONFIG_HOME}/zsh/aliases.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/aliases.zsh"
 [ -f "${XDG_CONFIG_HOME}/zsh/functions.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/functions.zsh"
+[ -f "${XDG_CONFIG_HOME}/zsh/todos.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/todos.zsh"
 [ -f "${XDG_CONFIG_HOME}/zsh/completions.zsh" ] && source "${XDG_CONFIG_HOME}/zsh/completions.zsh"
 
 # === Plugin management ===
@@ -187,5 +188,8 @@ __is_available starship \
 
 __is_available mise \
 && eval "$(mise activate zsh)"
+
+__is_available direnv \
+&& eval "$(direnv hook zsh)"
 
 # zprof

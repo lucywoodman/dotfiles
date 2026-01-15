@@ -52,7 +52,6 @@ tasks:
     cmds:
       - task: link:zsh
       - task: link:git
-      - task: link:helix
       - task: link:nvim
       - task: link:claude
       - task: link:mise
@@ -72,18 +71,13 @@ tasks:
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/functions.zsh {{.XDG_CONFIG_HOME}}/zsh/functions.zsh
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/completions.zsh {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/external.zsh {{.XDG_CONFIG_HOME}}/zsh/external.zsh
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/todos.zsh {{.XDG_CONFIG_HOME}}/zsh/todos.zsh
 
   link:git:
     desc: Symlink git configuration
     cmds:
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/git/config {{.XDG_CONFIG_HOME}}/git/config
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/git/ignore {{.XDG_CONFIG_HOME}}/git/ignore
-
-  link:helix:
-    desc: Symlink helix configuration
-    cmds:
-      - mkdir -p {{.XDG_CONFIG_HOME}}/helix
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/helix/* {{.XDG_CONFIG_HOME}}/helix/
 
   link:nvim:
     desc: Symlink neovim configuration
@@ -100,6 +94,7 @@ tasks:
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/agents/* ~/.claude/agents/
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/commands/* ~/.claude/commands/
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/settings.json ~/.claude/settings.json
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/CLAUDE.md ~/.claude/CLAUDE.md
 
   link:starship:
     desc: Symlink starship configuration
@@ -152,11 +147,27 @@ tasks:
       - rm -f {{.XDG_CONFIG_HOME}}/zsh/functions.zsh
       - rm -f {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
       - rm -f {{.XDG_CONFIG_HOME}}/zsh/external.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/helix
+      - rm -f {{.XDG_CONFIG_HOME}}/zsh/todos.zsh
       - rm -rf {{.XDG_CONFIG_HOME}}/nvim
       - rm -f {{.XDG_CONFIG_HOME}}/starship.toml
       - rm -rf ~/.private
       - echo "Symlinks removed"
+
+  # === Personal Management System ===
+  notes:init:
+    desc: Initialize personal management directory under ~/notes
+    cmds:
+      - mkdir -p ~/notes/pm-system
+      - mkdir -p ~/notes/pm-system/planning
+      - mkdir -p ~/notes/pm-system/planning/quarters
+      - mkdir -p ~/notes/pm-system/planning/months
+      - mkdir -p ~/notes/pm-system/planning/weeks
+    status:
+      - test -d ~/notes/pm-system
+      - test -d ~/notes/pm-system/planning
+      - test -d ~/notes/pm-system/planning/quarters
+      - test -d ~/notes/pm-system/planning/months
+      - test -d ~/notes/pm-system/planning/weeks
 
   check:
     desc: Check which symlinks are properly configured
@@ -173,15 +184,12 @@ tasks:
           ls -la {{.XDG_CONFIG_HOME}}/zsh/functions.zsh 2>/dev/null || echo "⚠️  functions.zsh missing"
           ls -la {{.XDG_CONFIG_HOME}}/zsh/completions.zsh 2>/dev/null || echo "⚠️  completions.zsh missing"
           ls -la {{.XDG_CONFIG_HOME}}/zsh/external.zsh 2>/dev/null || echo "⚠️  external.zsh missing"
+          ls -la {{.XDG_CONFIG_HOME}}/zsh/todos.zsh 2>/dev/null || echo "⚠️  todos.zsh missing"
           echo ""
 
           echo "=== Git Configuration ==="
           ls -la {{.XDG_CONFIG_HOME}}/git/config 2>/dev/null || echo "⚠️  git config missing"
           ls -la {{.XDG_CONFIG_HOME}}/git/ignore 2>/dev/null || echo "⚠️  git ignore missing"
-          echo ""
-
-          echo "=== Helix Editor ==="
-          ls -la {{.XDG_CONFIG_HOME}}/helix 2>/dev/null || echo "⚠️  Helix config missing"
           echo ""
 
           echo "=== Neovim Editor ==="
