@@ -17,7 +17,7 @@ default-root-container-orientation = 'auto'
 on-focus-changed = ['move-mouse window-lazy-center']
 
 # Workspace to monitor assignment
-# Main monitor: 1-7, Secondary monitor: 8, 9, 0
+# Main monitor: 1-6, 0 | Secondary monitor: 7, 8, 9
 [workspace-to-monitor-force-assignment]
 1 = 'main'
 2 = 'main'
@@ -25,10 +25,10 @@ on-focus-changed = ['move-mouse window-lazy-center']
 4 = 'main'
 5 = 'main'
 6 = 'main'
-7 = 'main'
+7 = 'secondary'
 8 = 'secondary'
 9 = 'secondary'
-0 = 'secondary'
+0 = 'main'
 
 # Apps that should float (not tile)
 [[on-window-detected]]
