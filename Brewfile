@@ -1,4 +1,6 @@
 tap 'buo/cask-upgrade' # Enables 'brew cu' to upgrade GUI apps
+tap 'gemfury/tap'      # Gemfury package registry CLI
+tap 'daveshanley/vacuum' # OpenAPI linter
 
 # Core CLI Tools
 brew 'bat'        # Modern cat with syntax highlighting
@@ -10,17 +12,19 @@ brew 'fzf'        # Fuzzy finder
 brew 'lolcat'     # Rainbow colored text output
 brew 'hexyl'      # Hex viewer (for fzf previews)
 brew 'htop'       # Interactive process viewer
+brew 'ical-buddy' # Query macOS Calendar from CLI
 brew 'jless'      # JSON viewer and processor
 brew 'jq'         # JSON processor
-brew 'lf'         # Terminal file manager
 brew 'lnav'       # Log file navigator and analyzer
 brew 'lsd'        # Modern ls with git integration
 brew 'pastel'     # Color manipulation and palette generation
+brew 'prips'      # Print IP address ranges
 brew 'ripgrep'    # Fast grep alternative
 brew 'starship'   # Cross-shell prompt
 brew 'taskwarrior-tui' # Terminal UI for taskwarrior
 brew 'tz'         # Time zone aware calendar and clock
 brew 'watch'      # Execute command periodically
+brew 'zellij'     # Terminal multiplexer
 brew 'zoxide'     # Shell extension to navigate faster
 
 # Git Tools
@@ -34,32 +38,38 @@ brew 'pre-commit' # Git hooks manager
 # Development Tools
 brew 'direnv'     # Directory-specific environment variables
 brew 'dprint'     # Code formatter
+brew 'fury-cli'   # Gemfury package registry CLI
 brew 'glow'       # Markdown renderer with syntax highlighting
 brew 'go-task'    # Modern task runner (replaces make)
-brew 'helix'      # Text editor
 brew 'neovim'     # Text editor
+brew 'overmind'   # Process manager for Procfile-based apps
+brew 'plantuml'   # UML diagram generator
 brew 'tree-sitter-cli' # Parser generator (required for nvim-treesitter)
 brew 'shellcheck' # Shell script static analysis
 brew 'taplo'      # TOML formatter
+brew 'vacuum'     # OpenAPI linter and validator
 
 # Language Tools & Version Managers
 brew 'mise'       # Unified runtime version manager (replaces nvm, rbenv, pyenv, etc.)
 brew 'bison'      # Parser generator (required for PHP compilation)
+brew 'libsodium'  # Cryptography library (required for some language extensions)
 brew 're2c'       # Lexer generator (required for PHP compilation)
 brew 'php'        # PHP language (managed by Homebrew, not mise due to build complexity)
 brew 'php@8.1'    # PHP 8.1
 brew 'composer'   # PHP package manager
 
 # Cloud & Container Tools (terraform, kubectl, helm, k9s now managed by mise)
-brew 'awscli'     # AWS command line
+brew 'heroku'     # Heroku CLI for app deployment
+# brew 'awscli'   # AWS command line (now managed by mise)
 brew 'kubectx'    # Kubernetes context switcher
 brew 'terraform-ls' # Terraform language server
 brew 'docker'     # Container runtime
 brew 'ctop'       # Container monitoring
 
 # Databases
-brew 'postgresql@14' # PostgreSQL database
+brew 'postgresql@17' # PostgreSQL database
 brew 'mysql@8.4'  # MySQL database
+brew 'redis'      # In-memory data store
 
 # GUI Applications Managers
 brew 'mas'        # Mac App Store manager (buggy)
