@@ -21,14 +21,13 @@ on-focus-changed = ['move-mouse window-lazy-center']
 [workspace-to-monitor-force-assignment]
 1 = 'main'
 2 = 'main'
-3 = 'main'
-4 = 'main'
-5 = 'main'
-6 = 'main'
-7 = 'secondary'
-8 = 'secondary'
-9 = 'secondary'
-0 = 'main'
+3 = ['secondary', 'main']
+4 = ['secondary', 'main']
+5 = ['secondary', 'main']
+6 = ['secondary', 'main']
+7 = ['secondary', 'main']
+8 = ['secondary', 'main']
+9 = ['secondary', 'main']
 
 # Apps that should float (not tile)
 [[on-window-detected]]
@@ -82,10 +81,6 @@ alt-shift-6 = 'move-node-to-workspace 6'
 alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
-
-# Additional workspaces (letters) - useful for second monitor
-alt-0 = 'workspace 0'
-alt-shift-0 = 'move-node-to-workspace 0'
 
 # Focus monitor (move between screens)
 alt-tab = 'focus-monitor next'
