@@ -2,7 +2,7 @@
   useConfigOnly = true
 	name = lucywoodman
 	email = hello@lucywoodman.com
-	
+
 [alias]
   aa = add --all
   big-mad = reset --hard HEAD^
@@ -26,7 +26,7 @@
   sync = !git fetch origin $1:$1
   undo = reset --soft HEAD^
   unstage = reset HEAD --
-  wip = !git add -A && git commit -m "WIP"
+  wip = !git add -A && git commit --no-verify -m "WIP"
   gone = "!f() { git fetch --all --prune; git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D; }; f"
 
 [commit]
