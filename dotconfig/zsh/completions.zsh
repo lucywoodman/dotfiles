@@ -73,3 +73,6 @@ zstyle ':fzf-tab:complete:(\\|*/|)make:*' fzf-preview \
 zstyle ':completion:*:*:killall:*:*' command 'ps -u "$USERNAME" -o comm'
 zstyle ':fzf-tab:complete:(\\|*/|)killall:*' fzf-preview \
   'ps aux | ag "$word" | _fzf_complete_realpath'
+
+# Complete `op` (1Password CLI)
+eval "$(op completion zsh)"; compdef _op op
