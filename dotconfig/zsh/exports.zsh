@@ -17,6 +17,9 @@ add_to_path() {
 add_to_path "vendor/bin"                # Project-specific PHP dependencies
 add_to_path "node_modules/.bin"         # Project-specific Node modules
 
+# Composer global binaries (phpcs, etc.)
+add_to_path "$HOME/.config/composer/vendor/bin"
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Homebrew Configuration
 # ═══════════════════════════════════════════════════════════════════════════
