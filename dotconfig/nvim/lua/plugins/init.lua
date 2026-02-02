@@ -140,8 +140,147 @@ return {
       vim.lsp.config("pyright", {})
       vim.lsp.config("rust_analyzer", {})
 
+      -- Go
+      vim.lsp.config("gopls", {})
+
+      -- PHP
+      vim.lsp.config("intelephense", {})
+
+      -- Bash
+      vim.lsp.config("bashls", {})
+
+      -- JSON (with schema support)
+      vim.lsp.config("jsonls", {
+        settings = {
+          json = {
+            validate = { enable = true },
+          },
+        },
+      })
+
+      -- YAML (with common schema support)
+      vim.lsp.config("yamlls", {
+        settings = {
+          yaml = {
+            validate = true,
+            schemaStore = { enable = true },
+          },
+        },
+      })
+
+      -- Markdown
+      vim.lsp.config("marksman", {})
+
+      -- Ruby
+      vim.lsp.config("solargraph", {})
+
       -- Enable configured servers
-      vim.lsp.enable({ "lua_ls", "ts_ls", "pyright", "rust_analyzer" })
+      vim.lsp.enable({
+        "lua_ls",
+        "ts_ls",
+        "pyright",
+        "rust_analyzer",
+        "gopls",
+        "intelephense",
+        "bashls",
+        "jsonls",
+        "yamlls",
+        "marksman",
+        "solargraph",
+      })
+    end,
+  },
+
+  -- ===== Linting =====
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local lint = require("lint")
+
+      -- Configure linters by filetype
+      -- These call CLI tools directly (must be in PATH)
+      lint.linters_by_ft = {
+        sh = { "shellcheck" },
+        bash = { "shellcheck" },
+        python = { "ruff" },
+        php = { "phpcs" },
+        -- ruby = { "rubocop" },
+        -- go = { "golangcilint" },
+      }
+
+      -- Run linters on save and when entering a buffer
+      vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+        group = vim.api.nvim_create_augroup("Linting", { clear = true }),
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+    end,
+  },
+
+  -- ===== Debugging (DAP) =====
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "rcarriga/nvim-dap-ui",
+      "nvim-neotest/nvim-nio",
+      "theHamsta/nvim-dap-virtual-text",
+    },
+    keys = {
+      { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+      { "<leader>dc", function() require("dap").continue() end, desc = "Continue/Start debugging" },
+      { "<leader>di", function() require("dap").step_into() end, desc = "Step into" },
+      { "<leader>do", function() require("dap").step_over() end, desc = "Step over" },
+      { "<leader>dO", function() require("dap").step_out() end, desc = "Step out" },
+      { "<leader>dr", function() require("dap").repl.open() end, desc = "Open REPL" },
+      { "<leader>dl", function() require("dap").run_last() end, desc = "Run last config" },
+      { "<leader>du", function() require("dapui").toggle() end, desc = "Toggle DAP UI" },
+      { "<leader>dx", function() require("dap").terminate() end, desc = "Terminate session" },
+    },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      -- Setup UI and virtual text
+      dapui.setup()
+      require("nvim-dap-virtual-text").setup()
+
+      -- Auto open/close UI with debug session
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
+
+      -- PHP adapter (requires: MasonInstall php-debug-adapter)
+      dap.adapters.php = {
+        type = "executable",
+        command = "node",
+        args = { vim.fn.stdpath("data") .. "/mason/packages/php-debug-adapter/extension/out/phpDebug.js" },
+      }
+
+      dap.configurations.php = {
+        {
+          type = "php",
+          request = "launch",
+          name = "Listen for Xdebug",
+          port = 9003,
+        },
+        {
+          type = "php",
+          request = "launch",
+          name = "Listen for Xdebug (Docker)",
+          port = 9003,
+          pathMappings = {
+            ["/var/www"] = vim.fn.getcwd(),
+          },
+        },
+      }
     end,
   },
 
@@ -203,7 +342,6 @@ return {
   -- ===== Telescope (fuzzy finder) =====
   {
     "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
       { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
