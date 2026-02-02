@@ -13,8 +13,8 @@ accordion-padding = 30
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
 
-# Mouse follows focus
-on-focus-changed = ['move-mouse window-lazy-center']
+# Mouse follows focus (disabled: causes cross-monitor workspace switching)
+# on-focus-changed = ['move-mouse window-lazy-center']
 
 # Workspace to monitor assignment
 # Main monitor: 1-6, 0 | Secondary monitor: 7, 8, 9
