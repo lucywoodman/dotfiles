@@ -76,6 +76,7 @@ tasks:
   link:git:
     desc: Symlink git configuration
     cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/git
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/git/config {{.XDG_CONFIG_HOME}}/git/config
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/git/ignore {{.XDG_CONFIG_HOME}}/git/ignore
 
@@ -89,10 +90,8 @@ tasks:
   link:claude:
     desc: Symlink Claude Code configuration
     cmds:
-      - mkdir -p ~/.claude/agents
-      - mkdir -p ~/.claude/commands
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/agents/* ~/.claude/agents/
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/commands/* ~/.claude/commands/
+      - mkdir -p ~/.claude
+      - ln -sfn {{.DOTFILES_DIR}}/dotconfig/claude/skills ~/.claude/skills
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/settings.json ~/.claude/settings.json
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/CLAUDE.md ~/.claude/CLAUDE.md
 
@@ -140,15 +139,13 @@ tasks:
     desc: Remove all symlinks (use with caution)
     prompt: This will remove symlinks to dotfiles. Continue?
     cmds:
-      - rm -f ~/.zshrc ~/.zshenv ~/.gitconfig ~/.gitignore_global ~/.dprint.json ~/.editorconfig
-      - rm -f ~/.claude
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/aliases.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/exports.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/functions.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/external.zsh
-      - rm -f {{.XDG_CONFIG_HOME}}/zsh/todos.zsh
+      - rm -f ~/.zshrc ~/.zshenv ~/.dprint.json ~/.editorconfig
+      - rm -rf ~/.claude/skills ~/.claude/settings.json ~/.claude/CLAUDE.md
+      - rm -rf {{.XDG_CONFIG_HOME}}/zsh
+      - rm -rf {{.XDG_CONFIG_HOME}}/git
       - rm -rf {{.XDG_CONFIG_HOME}}/nvim
+      - rm -rf {{.XDG_CONFIG_HOME}}/mise
+      - rm -rf {{.XDG_CONFIG_HOME}}/aerospace
       - rm -f {{.XDG_CONFIG_HOME}}/starship.toml
       - rm -rf ~/.private
       - echo "Symlinks removed"
@@ -197,9 +194,17 @@ tasks:
           echo ""
 
           echo "=== Claude Code ==="
-          ls -la ~/.claude/agents/ 2>/dev/null | grep -v '^total' | tail -n +2 || echo "⚠️  Claude agents symlinks missing"
-          ls -la ~/.claude/commands/ 2>/dev/null | grep -v '^total' | tail -n +2 || echo "⚠️  Claude commands symlinks missing"
+          ls -la ~/.claude/skills 2>/dev/null || echo "⚠️  Claude skills missing"
           ls -la ~/.claude/settings.json 2>/dev/null || echo "⚠️  Claude settings.json missing"
+          ls -la ~/.claude/CLAUDE.md 2>/dev/null || echo "⚠️  Claude CLAUDE.md missing"
+          echo ""
+
+          echo "=== Mise ==="
+          ls -la {{.XDG_CONFIG_HOME}}/mise/config.toml 2>/dev/null || echo "⚠️  mise config missing"
+          echo ""
+
+          echo "=== Aerospace ==="
+          ls -la {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml 2>/dev/null || echo "⚠️  aerospace config missing"
           echo ""
 
           echo "=== Starship Prompt ==="
