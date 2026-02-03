@@ -27,6 +27,7 @@ Find root cause, never fix symptoms. Read errors carefully, reproduce consistent
 
 ## Git
 
+- Use conventional commit format: `type(scope): description`
 - Create WIP branches when needed
 - Commit frequently, even for incomplete work
 - Never skip pre-commit hooks

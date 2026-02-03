@@ -1,6 +1,8 @@
+---
 name: review-changes
 description: Analyze changes for patterns, compare with existing code, and build pattern documentation
-prompt: |
+---
+
 I need you to analyze my changes for patterns and help build pattern knowledge for this codebase.
 
 ## Step 1: Understand what patterns are involved

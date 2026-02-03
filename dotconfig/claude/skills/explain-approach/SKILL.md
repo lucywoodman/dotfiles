@@ -1,3 +1,9 @@
+---
+name: explain-approach
+description: Explain architectural approach before implementation with trade-offs and alternatives
+argument-hint: [PR number | file/component | issue number | "current work"]
+---
+
 Before we proceed with $ARGUMENTS, explain the architectural approach:
 
 ## Step 1: UNDERSTAND THE CONTEXT
@@ -15,4 +21,3 @@ Before we proceed with $ARGUMENTS, explain the architectural approach:
 6. How this fits into the broader system
 
 Format as a Sandy Metz-style explanation with clear principles.
-
