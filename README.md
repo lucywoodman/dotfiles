@@ -24,10 +24,10 @@ Restart your terminal when complete.
 dotconfig/       # XDG-compliant app configurations
 ├── zsh/         # Shell customisations (aliases, exports, functions)
 ├── git/         # Git configurations
-├── helix/       # Helix editor config
-├── claude/      # Claude Code agents, commands and settings
+├── nvim/        # Neovim editor config
+├── aerospace/   # Tiling window manager config
+├── claude/      # Claude Code skills and settings
 ├── mise/        # Runtime version manager config
-├── rectange/    # Window manager settings
 ├── starship.toml
 ├── dprint.json
 └── editorconfig
@@ -40,10 +40,11 @@ Brewfile         # Homebrew package management
 ## Key Features
 
 - **Modern CLI tools**: `bat`, `lsd`, `fzf`, `zoxide`, `ripgrep`, `fd`, `jq`, `delta`
-- **Shell**: zdh with Oh-My-Zsh, Starship prompt, XDG-compliant configuration
+- **Shell**: zsh with Oh-My-Zsh, Starship prompt, XDG-compliant configuration
 - **Development stack**: `mise` for version management (Node, Python, Go, Terraform, Kubernetes tools), PHP via Homebrew
-- **Productivity apps**: 1Password, Alfred, Obsidian, Rectangle, Ghostty
-- **Development tools**: Claude Code, Helix
+- **Productivity apps**: 1Password, Alfred, Obsidian, AeroSpace, Ghostty
+- **Development tools**: Claude Code, Neovim
+- **1Password integration**: SSH agent and CLI tools authentication
 
 ## Task Commands
 
