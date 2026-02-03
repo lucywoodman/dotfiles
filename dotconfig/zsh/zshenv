@@ -2,6 +2,9 @@
 
 SHELL_SESSIONS_DISABLE=1
 
+# 1Password CLI: use desktop app for authentication (no separate fingerprint prompts)
+export OP_BIOMETRIC_UNLOCK_ENABLED=true
+
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_STATE_HOME="${HOME}/.local/state"
