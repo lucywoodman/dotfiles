@@ -175,20 +175,6 @@ is_ssh() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 1Password Lazy-Loaded Tools
-# ═══════════════════════════════════════════════════════════════════════════
-# These wrappers fetch secrets from 1Password on first use, avoiding shell
-# startup latency while keeping credentials out of dotfiles.
-
-# Jira CLI with API token from 1Password
-jira() {
-	if [[ -z "$JIRA_API_TOKEN" ]]; then
-		export JIRA_API_TOKEN="$(op read 'op://Employee/Jira API Token/credential' --no-newline)"
-	fi
-	command jira "$@"
-}
-
-# ═══════════════════════════════════════════════════════════════════════════
 # Personal Management Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
