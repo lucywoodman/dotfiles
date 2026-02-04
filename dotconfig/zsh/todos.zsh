@@ -51,10 +51,15 @@ todo() {
 			echo "  todo                     List active todos"
 			echo "  todo \"description\"       Add todo (medium priority)"
 			echo "  todo \"description\" high  Add todo with priority (high/medium/low)"
+			echo "  todo \"description\" 15-02 Add todo with due date (DD-MM format)"
+			echo "  todo \"description\" high tomorrow"
+			echo "                           Add with priority and due date"
 			echo "  todo done <number>       Complete todo"
 			echo "  todo drop <number>       Remove todo"
 			echo "  todo edit <number>       Edit todo in \$EDITOR"
 			echo "  todo today               Show todos completed today"
+			echo ""
+			echo "Due date options: today, tomorrow, or DD-MM (uses current year)"
 			return
 			;;
 		done)
@@ -77,7 +82,31 @@ todo() {
 
 	# Add new todo
 	local description="$1"
-	local priority="${2:-medium}"
+	local priority="medium"
+	local due=""
+
+	# Parse remaining args - could be priority (high/medium/low) or due date
+	shift
+	for arg in "$@"; do
+		case "$arg" in
+			high|medium|low)
+				priority="$arg"
+				;;
+			today)
+				due=$(date +%d-%m-%Y)
+				;;
+			tomorrow)
+				due=$(date -d "+1 day" +%d-%m-%Y 2>/dev/null || date -v+1d +%d-%m-%Y)
+				;;
+			[0-9][0-9]-[0-9][0-9])
+				# DD-MM format - add current year
+				due="${arg}-$(date +%Y)"
+				;;
+      *)
+        echo "Warning: ignoring unrecognised argument '$arg'"
+        ;;
+		esac
+	done
 
 	local date_prefix=$(date +%Y-%m-%d)
 	local slug=$(echo "$description" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-' | cut -c1-40)
@@ -96,7 +125,7 @@ todo() {
 ---
 created: $(date +%Y-%m-%d)
 priority: $priority
-due:
+due: $due
 context:
 ---
 
@@ -111,7 +140,10 @@ EOF
 	[ "$priority" = "medium" ] && badge="🟡"
 	[ "$priority" = "low" ] && badge="🟢"
 
-	echo "✅ Task added: $badge $description"
+	local due_msg=""
+	[ -n "$due" ] && due_msg=" (due: $due)"
+
+	echo "✅ Task added: $badge $description$due_msg"
 	local count=$(ls -1 ~/notes/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
 	echo "   Active tasks: $count"
 }
