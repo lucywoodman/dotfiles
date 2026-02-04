@@ -370,38 +370,32 @@ return {
 
   -- ===== File Explorer (tree sidebar) =====
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-    },
-    lazy = false, -- Load immediately so it opens on startup
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    lazy = false,
     keys = {
-      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle file explorer" },
-      { "<leader>o", "<cmd>Neotree focus<cr>", desc = "Focus file explorer" },
+      { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file explorer" },
+      { "<leader>o", "<cmd>NvimTreeFocus<cr>", desc = "Focus file explorer" },
     },
     opts = {
-      filesystem = {
-        follow_current_file = { enabled = true },
-        hijack_netrw_behavior = "open_current", -- Replace netrw
+      hijack_netrw = true,
+      sync_root_with_cwd = true,
+      update_focused_file = {
+        enable = true,
       },
-      window = {
-        position = "left",
+      view = {
+        side = "left",
         width = 30,
       },
     },
     init = function()
-      -- Open neo-tree on startup
+      -- Open nvim-tree on startup
       vim.api.nvim_create_autocmd("VimEnter", {
         callback = function()
           if vim.fn.argc() == 0 then
-            -- No file arguments: open neo-tree showing cwd
-            vim.cmd("Neotree show")
+            require("nvim-tree.api").tree.open()
           else
-            -- File arguments: open neo-tree and reveal current file
-            vim.cmd("Neotree show reveal")
+            require("nvim-tree.api").tree.find_file({ open = true, focus = false })
           end
         end,
       })
