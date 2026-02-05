@@ -195,48 +195,4 @@ _week_file() {
 	echo "$HOME/notes/pm-system/planning/weeks/week-$monday.md"
 }
 
-# Launch personal management workspace using zellij
-pm() {
-	local week_file=$(_week_file)
-	local week_dir=$(dirname "$week_file")
-
-	# Check if already in a pm session
-	if [ -n "$ZELLIJ" ] && [ "$ZELLIJ_SESSION_NAME" = "pm" ]; then
-		echo "Already in PM session"
-		return
-	fi
-
-	# Check for existing pm session (strip ANSI codes before matching)
-	if zellij list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -q "^pm"; then
-		echo "🔄 Attaching to existing PM session..."
-		echo "   (Use Ctrl+o, d to detach | Ctrl+q to quit)"
-		zellij attach pm
-	else
-		echo "🚀 Launching PM workspace..."
-		echo "   📅 Week file: $(basename "$week_file")"
-		echo "   📝 Layout: Claude Code + Neovim"
-		echo ""
-		echo "   Detach: Ctrl+o, d | Quit: Ctrl+q"
-		echo ""
-
-		# Generate layout with week file path embedded
-		local layout_file="/tmp/pm-layout-$$.kdl"
-		cat > "$layout_file" << LAYOUT
-layout {
-    pane split_direction="vertical" {
-        pane size="33%" command="claude" cwd="$HOME/notes" name="claude"
-        pane command="nvim" cwd="$HOME/notes" name="editor" {
-            args "$week_file"
-        }
-    }
-}
-LAYOUT
-
-		# -n: new session with layout, -s: session name
-		zellij -n "$layout_file" -s pm
-
-		# Clean up temp layout
-		rm -f "$layout_file"
-	fi
-}
 

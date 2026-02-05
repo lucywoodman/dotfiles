@@ -8,6 +8,7 @@ alias dotfiles="cd $HOME/.dotfiles"
 alias library="cd $HOME/Library"
 alias notes="cd $HOME/notes"
 alias planning="cd $HOME/notes/pm-system"
+alias pm='tmux new -A -s pm'
 alias workspace="cd $HOME/workspace"
 alias downloads='cd /private/tmp/downloads'
 

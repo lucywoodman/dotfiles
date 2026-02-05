@@ -58,6 +58,8 @@ tasks:
       - task: link:starship
       - task: link:misc
       - task: link:aerospace
+      - task: link:ghostty
+      - task: link:tmux
       - task: link:private
 
   link:zsh:
@@ -118,6 +120,18 @@ tasks:
       - mkdir -p {{.XDG_CONFIG_HOME}}/aerospace
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/aerospace/aerospace.toml {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml
 
+  link:ghostty:
+    desc: Symlink Ghostty terminal configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/ghostty
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/ghostty/config {{.XDG_CONFIG_HOME}}/ghostty/config
+
+  link:tmux:
+    desc: Symlink tmux configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/tmux
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/tmux/tmux.conf {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
+
   link:private:
     desc: Symlink private files (not version controlled)
     cmds:
@@ -146,6 +160,8 @@ tasks:
       - rm -rf {{.XDG_CONFIG_HOME}}/nvim
       - rm -rf {{.XDG_CONFIG_HOME}}/mise
       - rm -rf {{.XDG_CONFIG_HOME}}/aerospace
+      - rm -rf {{.XDG_CONFIG_HOME}}/ghostty
+      - rm -rf {{.XDG_CONFIG_HOME}}/tmux
       - rm -f {{.XDG_CONFIG_HOME}}/starship.toml
       - rm -rf ~/.private
       - echo "Symlinks removed"
@@ -205,6 +221,10 @@ tasks:
 
           echo "=== Aerospace ==="
           ls -la {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml 2>/dev/null || echo "⚠️  aerospace config missing"
+          echo ""
+
+          echo "=== Ghostty Terminal ==="
+          ls -la {{.XDG_CONFIG_HOME}}/ghostty/config 2>/dev/null || echo "⚠️  ghostty config missing"
           echo ""
 
           echo "=== Starship Prompt ==="

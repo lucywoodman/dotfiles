@@ -24,7 +24,7 @@ brew 'starship'   # Cross-shell prompt
 brew 'taskwarrior-tui' # Terminal UI for taskwarrior
 brew 'tz'         # Time zone aware calendar and clock
 brew 'watch'      # Execute command periodically
-brew 'zellij'     # Terminal multiplexer
+brew 'tmux'       # Terminal multiplexer
 brew 'zoxide'     # Shell extension to navigate faster
 
 # Git Tools

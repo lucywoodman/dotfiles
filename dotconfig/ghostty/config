@@ -1,0 +1,11 @@
+# Ghostty terminal configuration
+# https://ghostty.org/docs/config
+
+# Keybindings
+keybind = shift+enter=text:\n
+
+# macOS specific
+macos-option-as-alt = true
+
+# Status bar (footer)
+shell-integration-features = cursor,sudo,title
