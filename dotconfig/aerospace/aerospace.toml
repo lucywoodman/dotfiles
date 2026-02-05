@@ -17,7 +17,6 @@ default-root-container-orientation = 'auto'
 # on-focus-changed = ['move-mouse window-lazy-center']
 
 # Workspace to monitor assignment
-# Main monitor: 1-6, 0 | Secondary monitor: 7, 8, 9
 [workspace-to-monitor-force-assignment]
 1 = 'main'
 2 = 'main'
@@ -45,6 +44,10 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.cleanshot.cleanshot'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'eu.virtualtraining.rouvy.mac'
+run = ['layout floating', 'move-node-to-workspace 1']
 
 # Default keybindings (Alt/Option as main modifier)
 [mode.main.binding]
