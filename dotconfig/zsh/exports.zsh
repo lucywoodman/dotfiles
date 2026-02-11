@@ -20,6 +20,9 @@ add_to_path "node_modules/.bin"         # Project-specific Node modules
 # Composer global binaries (phpcs, etc.)
 add_to_path "$HOME/.config/composer/vendor/bin"
 
+# MySQL client tools (installed as keg-only by Homebrew)
+add_to_path "/opt/homebrew/opt/mysql@8.4/bin"
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Homebrew Configuration
 # ═══════════════════════════════════════════════════════════════════════════

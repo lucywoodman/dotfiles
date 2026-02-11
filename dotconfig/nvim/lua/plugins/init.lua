@@ -119,6 +119,11 @@ return {
             vim.lsp.buf.format({ async = true })
           end, opts)
 
+          -- Diagnostic keymaps
+          vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, opts)
+          vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
+          vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+
           -- Inlay hints (display-inlay-hints = true from Helix)
           local client = vim.lsp.get_client_by_id(ev.data.client_id)
           if client and client.server_capabilities.inlayHintProvider then
@@ -197,6 +202,17 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lint = require("lint")
+
+      -- Fix phpcs: strip PHP deprecation warnings before JSON parsing
+      local phpcs = lint.linters.phpcs
+      local original_parser = phpcs.parser
+      phpcs.parser = function(output, bufnr)
+        local json_start = output:find("{")
+        if json_start and json_start > 1 then
+          output = output:sub(json_start)
+        end
+        return original_parser(output, bufnr)
+      end
 
       -- Configure linters by filetype
       -- These call CLI tools directly (must be in PATH)

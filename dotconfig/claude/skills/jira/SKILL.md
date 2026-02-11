@@ -1,7 +1,7 @@
 ---
 name: jira
 description: Create well-structured JIRA tickets via jira-cli. Drafts tickets with clear summaries, descriptions, and work type classification. Always asks for confirmation before creating.
-disable-model-invocation: true
+disable-model-invocation: false
 allowed-tools: Bash(jira *), Bash(cat *), WebFetch
 argument-hint: [ticket description or ISSUE-KEY]
 ---
