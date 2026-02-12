@@ -4,30 +4,60 @@
 	email = hello@lucywoodman.com
 
 [alias]
+  # Stage all changes
   aa = add --all
+  # Reset commit and changes (destructive!)
   big-mad = reset --hard HEAD^
+  # List remote branches
   br = branch -r
+  # List branches with tracking info
   bv = branch -vv
+  # Amend last commit
   ca = commit --amend
+  # Commit all tracked changes (verbose)
   ci = commit -a -v
+  # Amend last commit, reuse message
   cm = commit -a --amend -C HEAD
+  # Show current branch name
+  cb = branch --show-current
+  # Checkout branch or files
   co = checkout
+  # Cherry-pick a commit
   cp = cherry-pick
+  # Get default branch name
+  db = !git symbolic-ref refs/remotes/origin/HEAD | sed 's|refs/remotes/origin/||'
+  # Refresh local default branch ref
+  db-update = remote set-head origin --auto
+  # Diff current branch against default (coloured A/M/D)
+  dm = "!sh -c 'git diff --name-status --diff-filter=ADM origin/$(git db)...$(git rev-parse --abbrev-ref HEAD) | sed -e \"s/^A/\\x1b[32mA\\x1b[0m/\" -e \"s/^M/\\x1b[33mM\\x1b[0m/\" -e \"s/^D/\\x1b[31mD\\x1b[0m/\"; echo; echo -e \"\\x1b[94mPaths changed: $(git diff --name-status --diff-filter=ADM origin/$(git db)...$(git rev-parse --abbrev-ref HEAD) | wc -l)\\x1b[0m\"'"
+  # Push with lease (safe force push)
   force-safe = push --force-with-lease
-	dm = "!sh -c 'git diff --name-status --diff-filter=ADM origin/$(git remote show origin | sed -n \"/HEAD branch/s/.*: //p\")...$(git rev-parse --abbrev-ref HEAD) | sed -e \"s/^A/\\x1b[32mA\\x1b[0m/\" -e \"s/^M/\\x1b[33mM\\x1b[0m/\" -e \"s/^D/\\x1b[31mD\\x1b[0m/\"; echo; echo -e \"\\x1b[94mPaths changed: $(git diff --name-status --diff-filter=ADM origin/$(git remote show origin | sed -n \"/HEAD branch/s/.*: //p\")...$(git rev-parse --abbrev-ref HEAD) | wc -l)\\x1b[0m\"'"
-  last = log -1 HEAD --stat
-  lg = log --color --graph --abbrev-commit --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset'
-  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
-  mad = reset --hard HEAD
-  mm = merge --no-ff
-  recent = for-each-ref --sort=committerdate --count=20 --format='%(refname:short)' refs/heads/
-  st = status --short --branch
-  sw = switch -c
-  sync = !git fetch origin $1:$1
-  undo = reset --soft HEAD^
-  unstage = reset HEAD --
-  wip = !git add -A && git commit --no-verify -m "WIP"
+  # Delete branches with gone remotes
   gone = "!f() { git fetch --all --prune; git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D; }; f"
+  # Show last commit with stats
+  last = log -1 HEAD --stat
+  # Pretty log graph
+  lg = log --color --graph --abbrev-commit --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset'
+  # Log with file change stats
+  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+  # Reset all changes (destructive!)
+  mad = reset --hard HEAD
+  # Merge with merge commit
+  mm = merge --no-ff
+  # List 20 most recent local branches
+  recent = for-each-ref --sort=committerdate --count=20 --format='%(refname:short)' refs/heads/
+  # Short status with branch info
+  st = status --short --branch
+  # Create and switch to new branch
+  sw = switch -c
+  # Fetch remote branch into local ref
+  sync = !git fetch origin $1:$1
+  # Undo last commit, keep changes staged
+  undo = reset --soft HEAD^
+  # Unstage files
+  unstage = reset HEAD --
+  # Quick WIP commit (all files, skip hooks)
+  wip = !git add -A && git commit --no-verify -m "WIP"
 
 [commit]
   gpgsign = true

@@ -99,46 +99,6 @@ dot_clean() {
 # Git Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Get the current git branch name
-git_current_branch() {
-	git branch --show-current
-}
-
-# Get the default branch name from remote origin
-git_default_branch() {
-	git remote show origin | sed -n '/HEAD branch/s/.*: //p'
-}
-
-# Remove git branches that have been merged into the default branch
-git_prune_branches() {
-	local default_branch
-	default_branch=$(git_default_branch)
-
-	local merged_branches
-	merged_branches=$(git branch --merged "$default_branch" | grep -v "\* $default_branch" | grep -v "^  $default_branch$")
-
-	if [ -z "$merged_branches" ]; then
-		echo "No merged branches to prune"
-		return
-	fi
-
-	echo "$merged_branches" > /tmp/branches_to_delete
-	"${EDITOR:-vim}" /tmp/branches_to_delete
-
-	while IFS= read -r branch; do
-		if [ -n "$branch" ]; then
-			git branch -d "$(echo "$branch" | xargs)"
-		fi
-	done < /tmp/branches_to_delete
-
-	rm /tmp/branches_to_delete
-}
-
-# Get the year a file was first added to git repository
-file_addition_year() {
-	git log --follow --format=%ad --date=format:%Y "$1" | tail -1
-}
-
 # List git stashes with detailed information about files changed
 git_stash_list() {
 	local stash_count
@@ -163,15 +123,6 @@ git_stash_list() {
 		git stash show --name-status "$stash_id" | sed 's/^/  /'
 		echo ""
 	done
-}
-
-# ═══════════════════════════════════════════════════════════════════════════
-# System Functions
-# ═══════════════════════════════════════════════════════════════════════════
-
-# Check if current shell session is over SSH
-is_ssh() {
-	[ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
