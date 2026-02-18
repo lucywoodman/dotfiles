@@ -33,6 +33,13 @@ Find root cause, never fix symptoms. Read errors carefully, reproduce consistent
 - Never skip pre-commit hooks
 - Ask before handling uncommitted changes
 
+## Pull Requests
+
+- Keep PRs under ~500 lines of code changed (additions + deletions, excluding lockfiles and generated code)
+- If work will exceed ~500 LOC, split it into stacked or sequential PRs before starting implementation
+- When planning, identify logical split points upfront and propose a PR sequence
+- Each PR must be independently reviewable: it should build, pass tests, and make sense on its own
+
 ## Non-Negotiables
 
 - Match existing code style within files
