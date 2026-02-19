@@ -59,11 +59,11 @@
   # Quick WIP commit (all files, skip hooks)
   wip = !git add -A && git commit --no-verify -m "WIP"
   # Add a new worktree with new branch (../repo-worktrees/branch)
-  wta = "!f() { root=$(git rev-parse --show-toplevel); git worktree add \"${root}/../$(basename ${root})-worktrees/$1\" -b \"$1\"; }; f"
+  wta = "!f() { root=$(git worktree list --porcelain | head -1 | sed 's/worktree //'); git worktree add \"${root}/../$(basename ${root})-worktrees/$1\" -b \"$1\"; }; f"
   # List all worktrees
   wtl = worktree list
   # Remove a worktree (../repo-worktrees/branch)
-  wtr = "!f() { root=$(git rev-parse --show-toplevel); git worktree remove \"${root}/../$(basename ${root})-worktrees/$1\"; }; f"
+  wtr = "!f() { root=$(git worktree list --porcelain | head -1 | sed 's/worktree //'); git worktree remove \"${root}/../$(basename ${root})-worktrees/$1\"; }; f"
 
 [commit]
   gpgsign = true

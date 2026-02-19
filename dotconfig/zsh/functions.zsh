@@ -135,6 +135,106 @@ git_stash_list() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Worktree Functions
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Get the main worktree root (not the current worktree)
+_wt_root() {
+	git worktree list --porcelain | head -1 | sed 's/worktree //'
+}
+
+# Create a worktree and open it in a tmux window
+wt() {
+	if [ -z "$1" ]; then
+		echo "Usage: wt <branch>"
+		return 1
+	fi
+
+	local branch="$1"
+	local root=$(_wt_root)
+	local wt_dir="${root}/../$(basename "${root}")-worktrees/${branch}"
+
+	# Create worktree if it doesn't already exist
+	if [ ! -d "$wt_dir" ]; then
+		if git show-ref --verify --quiet "refs/heads/${branch}"; then
+			git worktree add "$wt_dir" "$branch" || return 1
+		elif git show-ref --verify --quiet "refs/remotes/origin/${branch}"; then
+			git worktree add "$wt_dir" --track -b "$branch" "origin/${branch}" || return 1
+		else
+			git worktree add "$wt_dir" -b "$branch" || return 1
+		fi
+	fi
+
+	# Open in tmux window or just cd
+	if [ -n "$TMUX" ]; then
+		tmux new-window -n "$branch" -c "$wt_dir"
+	else
+		cd "$wt_dir"
+	fi
+}
+
+# Switch between worktrees via fzf
+wts() {
+	local selected
+	selected=$(git worktree list | fzf \
+		--prompt="worktree> " \
+		--preview='git log --oneline -10 --color=always {2}' \
+		--preview-window=right:50%) || return
+
+	local wt_path branch
+	wt_path=$(echo "$selected" | awk '{print $1}')
+	branch=$(echo "$selected" | awk '{print $3}' | tr -d '[]')
+
+	if [ -n "$TMUX" ]; then
+		# Switch to existing window or create one
+		if tmux select-window -t ":${branch}" 2>/dev/null; then
+			return
+		fi
+		tmux new-window -n "$branch" -c "$wt_path"
+	else
+		cd "$wt_path"
+	fi
+}
+
+# Remove a worktree and optionally delete the branch
+wtd() {
+	local branch="${1:-$(git branch --show-current)}"
+
+	if [ -z "$branch" ]; then
+		echo "Usage: wtd <branch> (or run from within a worktree branch)"
+		return 1
+	fi
+
+	local root=$(_wt_root)
+	local wt_dir="${root}/../$(basename "${root}")-worktrees/${branch}"
+
+	if [ ! -d "$wt_dir" ]; then
+		echo "Worktree not found: $wt_dir"
+		return 1
+	fi
+
+	# Move out if we're inside the worktree
+	case "$PWD" in
+		"$wt_dir"*) cd "$root" ;;
+	esac
+
+	# Remove the worktree (refuses if dirty)
+	git worktree remove "$wt_dir" || return 1
+
+	# Prompt to delete the branch
+	printf "Delete branch '%s'? [y/N] " "$branch"
+	read -r reply
+	if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
+		git branch -d "$branch"
+	fi
+
+	# Close the tmux window if it exists
+	if [ -n "$TMUX" ]; then
+		tmux kill-window -t ":${branch}" 2>/dev/null
+	fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Personal Management Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
