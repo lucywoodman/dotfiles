@@ -234,6 +234,11 @@ wtd() {
 	fi
 }
 
+# Mission Control — monitor all Claude sessions across tmux
+mc() {
+	uv run --quiet --script ~/.dotfiles/dotconfig/bin/mc "$@"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Personal Management Functions
 # ═══════════════════════════════════════════════════════════════════════════
