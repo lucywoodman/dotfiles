@@ -16,3 +16,6 @@ dotconfig/claude/settings.json
 *.swp
 *~
 
+# Python
+__pycache__/
+

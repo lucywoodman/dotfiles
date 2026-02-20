@@ -1,0 +1,399 @@
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["rich>=13"]
+# ///
+"""Mission Control — monitor all Claude Code sessions across tmux."""
+
+import os
+import re
+import select
+import subprocess
+import sys
+import termios
+import time
+import tty
+from dataclasses import dataclass
+
+from rich.console import Console
+from rich.table import Table
+from rich.text import Text
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ANSI stripping
+# ─────────────────────────────────────────────────────────────────────────────
+
+ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]|\x1b\].*?\x07|\x1b\[.*?m")
+
+
+def strip_ansi(text: str) -> str:
+    return ANSI_RE.sub("", text)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Subprocess helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=5, **kwargs)
+
+
+def tmux_cmd(args: list[str]) -> str | None:
+    """Run a tmux command, return stdout or None on failure."""
+    result = run(["tmux", *args])
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Data model
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@dataclass
+class Session:
+    session_name: str   # "pm", "work"
+    window_name: str    # "notes", "bc-2343"
+    pane_index: str     # "1"
+    pane_tty: str       # "/dev/ttys006"
+    project_path: str   # "/Users/.../notes"
+    project_name: str   # derived from path basename
+    tmux_target: str    # "pm:notes.1" (for tmux commands)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Session discovery
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def discover_sessions() -> list[Session]:
+    """Find all tmux panes running claude."""
+    output = tmux_cmd([
+        "list-panes", "-a", "-F",
+        "#{session_name}\t#{window_name}\t#{pane_index}\t#{pane_tty}\t#{pane_current_command}\t#{pane_current_path}",
+    ])
+    if not output:
+        return []
+
+    sessions = []
+    for line in output.splitlines():
+        parts = line.split("\t")
+        if len(parts) != 6:
+            continue
+        sess_name, win_name, pane_idx, pane_tty, command, path = parts
+        if command != "claude":
+            continue
+        target = f"{sess_name}:{win_name}.{pane_idx}"
+        sessions.append(Session(
+            session_name=sess_name,
+            window_name=win_name,
+            pane_index=pane_idx,
+            pane_tty=pane_tty,
+            project_path=path,
+            project_name=os.path.basename(path),
+            tmux_target=target,
+        ))
+    return sessions
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# State detection
+# ─────────────────────────────────────────────────────────────────────────────
+
+WAIT_PATTERNS = [
+    r"accept",
+    r"approve",
+    r"shift\+tab",
+    r"\[y/n\]",
+    r"\[y/N\]",
+    r"\[Y/n\]",
+    r"plan mode",
+    r"Do you want to proceed",
+]
+WAIT_RE = re.compile("|".join(WAIT_PATTERNS), re.IGNORECASE)
+
+ERROR_PATTERNS = [
+    r"error[:\s]",
+    r"fatal[:\s]",
+    r"panic[:\s]",
+    r"traceback",
+    r"exception",
+]
+ERROR_RE = re.compile("|".join(ERROR_PATTERNS), re.IGNORECASE)
+
+
+def claude_status(session: Session) -> str:
+    """Detect Claude Code's state in the given session.
+
+    We already know claude is running (filtered in discovery),
+    so we just need to check pane content for waiting/error states.
+
+    Returns one of: error, waiting, active
+    """
+    pane_content = tmux_cmd(
+        ["capture-pane", "-t", session.tmux_target, "-p", "-S", "-5"]
+    )
+    clean_content = strip_ansi(pane_content) if pane_content else ""
+
+    if clean_content and ERROR_RE.search(clean_content):
+        return "error"
+
+    if clean_content and WAIT_RE.search(clean_content):
+        return "waiting"
+
+    return "active"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Idle time
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def get_idle_secs(target: str) -> int | None:
+    """Seconds since last activity in the tmux pane."""
+    activity = tmux_cmd(
+        ["display-message", "-t", target, "-p", "#{window_activity}"]
+    )
+    if activity is None:
+        return None
+    try:
+        return int(time.time() - int(activity))
+    except (ValueError, TypeError):
+        return None
+
+
+def format_idle(seconds: int | None) -> str:
+    if seconds is None:
+        return "-"
+    if seconds < 60:
+        return f"{seconds}s"
+    if seconds < 3600:
+        return f"{seconds / 60:.1f}m"
+    if seconds < 86400:
+        return f"{seconds / 3600:.1f}h"
+    return f"{seconds // 86400}d"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Git info
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def get_dirty_count(path: str) -> int | None:
+    """Return number of dirty files, or None if not a git repo."""
+    result = run(["git", "-C", path, "status", "--short"])
+    if result.returncode != 0:
+        return None
+    return len([line for line in result.stdout.splitlines() if line.strip()])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Info line
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Lines to skip when extracting the info line
+SKIP_PATTERNS = [
+    re.compile(r"^\s*$"),  # blank
+    re.compile(r"^[─━─]{3,}"),  # separator bars
+    re.compile(r"^\s*❯\s*$"),  # bare prompt
+    re.compile(r"Opus\s+\d"),  # model status bar
+    re.compile(r"Sonnet\s+\d"),  # model status bar
+    re.compile(r"Haiku\s+\d"),  # model status bar
+    re.compile(r"^plan mode", re.IGNORECASE),  # mode indicator
+]
+
+
+def get_info_line(target: str) -> str:
+    """Extract the last meaningful line from the tmux pane."""
+    pane_content = tmux_cmd(
+        ["capture-pane", "-t", target, "-p", "-S", "-10"]
+    )
+    if not pane_content:
+        return ""
+
+    lines = pane_content.splitlines()
+    # Walk bottom-up to find first meaningful line
+    for line in reversed(lines):
+        clean = strip_ansi(line).strip()
+        if any(pat.search(clean) for pat in SKIP_PATTERNS):
+            continue
+        return clean
+    return ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Rendering
+# ─────────────────────────────────────────────────────────────────────────────
+
+STATE_DISPLAY = {
+    "active": ("[green]●[/green] active", "green"),
+    "waiting": ("[yellow]◆[/yellow] waiting", "yellow"),
+    "error": ("[red]✖[/red] error", "red"),
+}
+
+
+def current_pane_target() -> str | None:
+    """Get the tmux target of the pane running this script."""
+    return tmux_cmd([
+        "display-message", "-p",
+        "#{session_name}:#{window_name}.#{pane_index}",
+    ])
+
+
+def build_table(
+    sessions: list[Session], self_target: str | None
+) -> tuple[Table, dict[str, int]]:
+    """Build a rich Table of session states. Returns (table, state_counters)."""
+    table = Table(
+        show_header=True,
+        header_style="bold",
+        show_edge=False,
+        pad_edge=False,
+        expand=False,
+    )
+    table.add_column("#", style="dim", width=3, justify="right")
+    table.add_column("Session", min_width=16)
+    table.add_column("Project", min_width=12)
+    table.add_column("State", min_width=12)
+    table.add_column("Idle", justify="right", min_width=6)
+    table.add_column("Dirty", justify="right", min_width=5)
+    table.add_column("Info", no_wrap=True)
+
+    counters: dict[str, int] = {}
+
+    for idx, session in enumerate(sessions, 1):
+        state = claude_status(session)
+        counters[state] = counters.get(state, 0) + 1
+
+        display, _style = STATE_DISPLAY.get(state, ("[dim]?[/dim]", "dim"))
+
+        idle_secs = get_idle_secs(session.tmux_target)
+        idle_str = format_idle(idle_secs)
+
+        dirty = get_dirty_count(session.project_path)
+        dirty_str = "-" if dirty is None else ("clean" if dirty == 0 else str(dirty))
+
+        session_label = f"{session.session_name}:{session.window_name}"
+
+        # Skip info line for the pane running this script (self-capture noise)
+        if session.tmux_target == self_target:
+            info = ""
+        else:
+            info = get_info_line(session.tmux_target)
+
+        table.add_row(
+            str(idx), session_label, session.project_name,
+            display, idle_str, dirty_str, info,
+        )
+
+    return table, counters
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Input handling
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def read_with_timeout(timeout_secs: float) -> str:
+    """Read a line from stdin with timeout. Returns empty string on timeout."""
+    if not sys.stdin.isatty():
+        time.sleep(timeout_secs)
+        return ""
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setcbreak(fd)
+        ready, _, _ = select.select([sys.stdin], [], [], timeout_secs)
+        if ready:
+            # Read available characters
+            chars = []
+            while True:
+                r, _, _ = select.select([sys.stdin], [], [], 0)
+                if not r:
+                    break
+                ch = sys.stdin.read(1)
+                if ch in ("\n", "\r"):
+                    break
+                chars.append(ch)
+            return "".join(chars)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main loop
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def main() -> None:
+    if not os.environ.get("TMUX"):
+        print("Requires tmux")
+        sys.exit(1)
+
+    console = Console()
+
+    while True:
+        self_target = current_pane_target()
+        sessions = discover_sessions()
+        table, counters = build_table(sessions, self_target)
+
+        console.clear()
+
+        # Header
+        timestamp = time.strftime("%H:%M:%S")
+        console.print(
+            Text(f"Mission Control — {timestamp}", style="bold blue")
+        )
+        console.print()
+
+        if not sessions:
+            console.print("[dim]No Claude sessions found[/dim]")
+        else:
+            # Table
+            console.print(table)
+            console.print()
+
+            # Summary footer
+            parts = []
+            for state, label, style in [
+                ("active", "Active", "green"),
+                ("waiting", "Waiting", "yellow"),
+                ("error", "Error", "red"),
+            ]:
+                count = counters.get(state, 0)
+                if count > 0:
+                    parts.append(f"[{style}]{label}: {count}[/{style}]")
+            if parts:
+                console.print(" | ".join(parts))
+                console.print()
+
+        # Command hint
+        console.print("[dim]f <#> focus · q quit · Enter refresh[/dim]")
+        console.print("[dim]Command: [/dim]", end="")
+
+        # Wait for input or timeout
+        cmd = read_with_timeout(5)
+        cmd = cmd.strip()
+
+        if cmd == "q":
+            console.clear()
+            break
+        elif cmd.startswith("f") and sessions:
+            parts_cmd = cmd.split()
+            if len(parts_cmd) >= 2:
+                try:
+                    num = int(parts_cmd[1])
+                    if 1 <= num <= len(sessions):
+                        target = sessions[num - 1].tmux_target
+                        tmux_cmd(["switch-client", "-t", target])
+                        break
+                except ValueError:
+                    pass
+        # Enter or timeout → refresh (loop continues)
+
+
+if __name__ == "__main__":
+    main()
