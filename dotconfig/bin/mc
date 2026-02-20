@@ -53,6 +53,11 @@ def capture_pane(target: str, lines: int = 10) -> str:
     return strip_ansi(raw) if raw else ""
 
 
+def send_keys(target: str, *keys: str) -> bool:
+    """Send keys to a tmux pane. Returns True on success."""
+    return tmux_cmd(["send-keys", "-t", target, *keys]) is not None
+
+
 def format_tokens(tokens: int) -> str:
     """Format a token count for compact display."""
     if tokens < 1000:
@@ -199,12 +204,13 @@ def claude_status(content: str, status_bar: StatusBar | None) -> str:
         if status_bar.activity is not None:
             return "active"
 
-    # Regex fallback
-    if content and ERROR_RE.search(content):
-        return "error"
-
+    # Regex fallback — wait before error so an explicit approval prompt
+    # isn't masked by incidental "error" text in tool output
     if content and WAIT_RE.search(content):
         return "waiting"
+
+    if content and ERROR_RE.search(content):
+        return "error"
 
     return "active"
 
@@ -265,7 +271,7 @@ SKIP_PATTERNS = [
     re.compile(r"Sonnet\s+\d"),  # model status bar
     re.compile(r"Haiku\s+\d"),  # model status bar
     re.compile(r"^plan mode", re.IGNORECASE),  # mode indicator
-    re.compile(r"^\s*[✻✢✽⏺⏸]\s"),  # activity icon lines
+    re.compile(r"^\s*[✻✢✽⏺⏸⏵]+\s"),  # activity icon lines
 ]
 
 
@@ -312,8 +318,8 @@ def current_pane_target() -> str | None:
 
 def build_table(
     sessions: list[Session], self_target: str | None
-) -> tuple[Table, dict[str, int]]:
-    """Build a rich Table of session states. Returns (table, state_counters)."""
+) -> tuple[Table, dict[str, int], list[str]]:
+    """Build a rich Table of session states. Returns (table, counters, states)."""
     table = Table(
         show_header=True,
         header_style="bold",
@@ -331,6 +337,7 @@ def build_table(
     table.add_column("Info", no_wrap=True)
 
     counters: dict[str, int] = {}
+    states: list[str] = []
 
     for idx, session in enumerate(sessions, 1):
         content = capture_pane(session.tmux_target)
@@ -338,6 +345,7 @@ def build_table(
 
         state = claude_status(content, status_bar)
         counters[state] = counters.get(state, 0) + 1
+        states.append(state)
 
         display, _style = STATE_DISPLAY.get(state, ("[dim]?[/dim]", "dim"))
 
@@ -365,7 +373,7 @@ def build_table(
             display, model_str, idle_str, dirty_str, info,
         )
 
-    return table, counters
+    return table, counters, states
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -401,6 +409,24 @@ def read_with_timeout(timeout_secs: float) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Command parsing
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def parse_session_num(parts: list[str], sessions: list[Session]) -> int | None:
+    """Parse session number from command parts. Returns 0-based index or None."""
+    if len(parts) < 2:
+        return None
+    try:
+        num = int(parts[1])
+    except ValueError:
+        return None
+    if not (1 <= num <= len(sessions)):
+        return None
+    return num - 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main loop
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -411,11 +437,12 @@ def main() -> None:
         sys.exit(1)
 
     console = Console()
+    flash: str | None = None
 
     while True:
         self_target = current_pane_target()
         sessions = discover_sessions()
-        table, counters = build_table(sessions, self_target)
+        table, counters, states = build_table(sessions, self_target)
 
         console.clear()
 
@@ -447,7 +474,14 @@ def main() -> None:
                 console.print(" | ".join(parts))
                 console.print()
 
-        # Command hint
+        # Flash message (one-shot)
+        if flash:
+            console.print(flash)
+            console.print()
+            flash = None
+
+        # Command hints
+        console.print("[dim]y <#> approve · p <#> pause · s <#> <text> send[/dim]")
         console.print("[dim]f <#> focus · q quit · Enter refresh[/dim]")
         console.print("[dim]Command: [/dim]", end="")
 
@@ -458,17 +492,47 @@ def main() -> None:
         if cmd == "q":
             console.clear()
             break
-        elif cmd.startswith("f") and sessions:
-            parts_cmd = cmd.split()
-            if len(parts_cmd) >= 2:
-                try:
-                    num = int(parts_cmd[1])
-                    if 1 <= num <= len(sessions):
-                        target = sessions[num - 1].tmux_target
-                        tmux_cmd(["switch-client", "-t", target])
-                        break
-                except ValueError:
-                    pass
+
+        parts_cmd = cmd.split(None, 2)  # maxsplit=2 for "s <#> multi word text"
+        action = parts_cmd[0] if parts_cmd else ""
+
+        if not sessions:
+            continue
+
+        idx = parse_session_num(parts_cmd, sessions)
+
+        if action == "f" and idx is not None:
+            tmux_cmd(["switch-client", "-t", sessions[idx].tmux_target])
+            break
+
+        elif action == "y" and idx is not None:
+            target = sessions[idx].tmux_target
+            if states[idx] != "waiting":
+                flash = f"[yellow]Session #{idx + 1} is {states[idx]}, not waiting[/yellow]"
+            elif send_keys(target, "y", "Enter"):
+                flash = f"[green]Sent 'y' to #{idx + 1}[/green]"
+            else:
+                flash = f"[red]Failed to send to #{idx + 1}[/red]"
+
+        elif action == "p" and idx is not None:
+            target = sessions[idx].tmux_target
+            if states[idx] != "active":
+                flash = f"[yellow]Session #{idx + 1} is {states[idx]}, not active[/yellow]"
+            elif send_keys(target, "Escape"):
+                flash = f"[green]Paused #{idx + 1}[/green]"
+            else:
+                flash = f"[red]Failed to send to #{idx + 1}[/red]"
+
+        elif action == "s" and idx is not None:
+            if len(parts_cmd) < 3:
+                flash = "[yellow]Usage: s <#> <text>[/yellow]"
+            else:
+                target = sessions[idx].tmux_target
+                # Send text literally (-l prevents key name interpretation),
+                # then Enter as a key
+                tmux_cmd(["send-keys", "-t", target, "-l", parts_cmd[2]])
+                send_keys(target, "Enter")
+                flash = f"[green]Sent text to #{idx + 1}[/green]"
         # Enter or timeout → refresh (loop continues)
 
 
