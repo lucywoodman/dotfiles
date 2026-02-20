@@ -47,6 +47,21 @@ def tmux_cmd(args: list[str]) -> str | None:
     return result.stdout.strip()
 
 
+def capture_pane(target: str, lines: int = 10) -> str:
+    """Capture last N lines from a tmux pane, ANSI-stripped."""
+    raw = tmux_cmd(["capture-pane", "-t", target, "-p", "-S", f"-{lines}"])
+    return strip_ansi(raw) if raw else ""
+
+
+def format_tokens(tokens: int) -> str:
+    """Format a token count for compact display."""
+    if tokens < 1000:
+        return str(tokens)
+    if tokens < 1_000_000:
+        return f"{tokens / 1000:.0f}k"
+    return f"{tokens / 1_000_000:.1f}M"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Data model
 # ─────────────────────────────────────────────────────────────────────────────
@@ -61,6 +76,14 @@ class Session:
     project_path: str   # "/Users/.../notes"
     project_name: str   # derived from path basename
     tmux_target: str    # "pm:notes.1" (for tmux commands)
+
+
+@dataclass
+class StatusBar:
+    model: str                  # "Opus 4.6"
+    tokens: int                 # 51912
+    activity: str | None        # "Moseying… (1m 56s · ↓ 7.0k tokens)" or None
+    activity_icon: str | None   # "✻", "✢", "✽", "⏺", "⏸", or None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -99,6 +122,44 @@ def discover_sessions() -> list[Session]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Status bar parsing
+# ─────────────────────────────────────────────────────────────────────────────
+
+STATUS_LINE_RE = re.compile(
+    r"^\s*(Opus|Sonnet|Haiku)\s+([\d.]+)\s+.+?\s+(\d+)\s+tokens"
+)
+ACTIVITY_ICON_RE = re.compile(r"^\s*([✻✢✽⏺⏸])\s+(.+)$")
+
+
+def parse_status_bar(content: str) -> StatusBar | None:
+    """Parse Claude Code's status bar from captured pane content.
+
+    Searches bottom-up for the model line, then checks the line below
+    for an activity icon line.
+    """
+    lines = content.splitlines()
+    for i in range(len(lines) - 1, -1, -1):
+        m = STATUS_LINE_RE.match(lines[i])
+        if not m:
+            continue
+        model = f"{m.group(1)} {m.group(2)}"
+        tokens = int(m.group(3))
+        activity = None
+        activity_icon = None
+        # Check the line after the model line for an activity icon
+        if i + 1 < len(lines):
+            am = ACTIVITY_ICON_RE.match(lines[i + 1])
+            if am:
+                activity_icon = am.group(1)
+                activity = am.group(2)
+        return StatusBar(
+            model=model, tokens=tokens,
+            activity=activity, activity_icon=activity_icon,
+        )
+    return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # State detection
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -124,23 +185,25 @@ ERROR_PATTERNS = [
 ERROR_RE = re.compile("|".join(ERROR_PATTERNS), re.IGNORECASE)
 
 
-def claude_status(session: Session) -> str:
-    """Detect Claude Code's state in the given session.
+def claude_status(content: str, status_bar: StatusBar | None) -> str:
+    """Detect Claude Code's state from pane content and status bar.
 
-    We already know claude is running (filtered in discovery),
-    so we just need to check pane content for waiting/error states.
+    Uses status bar activity when available, falls back to regex matching.
 
     Returns one of: error, waiting, active
     """
-    pane_content = tmux_cmd(
-        ["capture-pane", "-t", session.tmux_target, "-p", "-S", "-5"]
-    )
-    clean_content = strip_ansi(pane_content) if pane_content else ""
+    # Status bar–based detection (more reliable)
+    if status_bar:
+        if status_bar.activity_icon == "⏸":
+            return "waiting"
+        if status_bar.activity is not None:
+            return "active"
 
-    if clean_content and ERROR_RE.search(clean_content):
+    # Regex fallback
+    if content and ERROR_RE.search(content):
         return "error"
 
-    if clean_content and WAIT_RE.search(clean_content):
+    if content and WAIT_RE.search(content):
         return "waiting"
 
     return "active"
@@ -202,21 +265,26 @@ SKIP_PATTERNS = [
     re.compile(r"Sonnet\s+\d"),  # model status bar
     re.compile(r"Haiku\s+\d"),  # model status bar
     re.compile(r"^plan mode", re.IGNORECASE),  # mode indicator
+    re.compile(r"^\s*[✻✢✽⏺⏸]\s"),  # activity icon lines
 ]
 
 
-def get_info_line(target: str) -> str:
-    """Extract the last meaningful line from the tmux pane."""
-    pane_content = tmux_cmd(
-        ["capture-pane", "-t", target, "-p", "-S", "-10"]
-    )
-    if not pane_content:
+def get_info_line(content: str, status_bar: StatusBar | None) -> str:
+    """Extract the most useful info line from the pane.
+
+    When the status bar shows an activity (Claude is working), use that —
+    it's more informative than a stale output line. Otherwise, fall back
+    to bottom-up scraping of pane content.
+    """
+    if status_bar and status_bar.activity:
+        return status_bar.activity
+
+    if not content:
         return ""
 
-    lines = pane_content.splitlines()
     # Walk bottom-up to find first meaningful line
-    for line in reversed(lines):
-        clean = strip_ansi(line).strip()
+    for line in reversed(content.splitlines()):
+        clean = line.strip()
         if any(pat.search(clean) for pat in SKIP_PATTERNS):
             continue
         return clean
@@ -257,6 +325,7 @@ def build_table(
     table.add_column("Session", min_width=16)
     table.add_column("Project", min_width=12)
     table.add_column("State", min_width=12)
+    table.add_column("Model", min_width=18)
     table.add_column("Idle", justify="right", min_width=6)
     table.add_column("Dirty", justify="right", min_width=5)
     table.add_column("Info", no_wrap=True)
@@ -264,10 +333,18 @@ def build_table(
     counters: dict[str, int] = {}
 
     for idx, session in enumerate(sessions, 1):
-        state = claude_status(session)
+        content = capture_pane(session.tmux_target)
+        status_bar = parse_status_bar(content)
+
+        state = claude_status(content, status_bar)
         counters[state] = counters.get(state, 0) + 1
 
         display, _style = STATE_DISPLAY.get(state, ("[dim]?[/dim]", "dim"))
+
+        if status_bar:
+            model_str = f"{status_bar.model} · {format_tokens(status_bar.tokens)}"
+        else:
+            model_str = "-"
 
         idle_secs = get_idle_secs(session.tmux_target)
         idle_str = format_idle(idle_secs)
@@ -281,11 +358,11 @@ def build_table(
         if session.tmux_target == self_target:
             info = ""
         else:
-            info = get_info_line(session.tmux_target)
+            info = get_info_line(content, status_bar)
 
         table.add_row(
             str(idx), session_label, session.project_name,
-            display, idle_str, dirty_str, info,
+            display, model_str, idle_str, dirty_str, info,
         )
 
     return table, counters
