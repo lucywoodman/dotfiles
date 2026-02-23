@@ -64,16 +64,14 @@ tasks:
 
   link:zsh:
     desc: Symlink zsh configuration
+    vars:
+      ZSH_CONFIGS: aliases.zsh exports.zsh functions.zsh completions.zsh external.zsh todos.zsh
     cmds:
       - mkdir -p {{.XDG_CONFIG_HOME}}/zsh
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/zshrc ~/.zshrc
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/zshenv ~/.zshenv
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/aliases.zsh {{.XDG_CONFIG_HOME}}/zsh/aliases.zsh
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/exports.zsh {{.XDG_CONFIG_HOME}}/zsh/exports.zsh
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/functions.zsh {{.XDG_CONFIG_HOME}}/zsh/functions.zsh
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/completions.zsh {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/external.zsh {{.XDG_CONFIG_HOME}}/zsh/external.zsh
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/todos.zsh {{.XDG_CONFIG_HOME}}/zsh/todos.zsh
+      - for: { var: ZSH_CONFIGS }
+        cmd: ln -sf {{.DOTFILES_DIR}}/dotconfig/zsh/{{.ITEM}} {{.XDG_CONFIG_HOME}}/zsh/{{.ITEM}}
 
   link:git:
     desc: Symlink git configuration
@@ -185,57 +183,32 @@ tasks:
   check:
     desc: Check which symlinks are properly configured
     silent: true
+    vars:
+      SYMLINKS: >-
+        ~/.zshrc
+        ~/.zshenv
+        {{.XDG_CONFIG_HOME}}/zsh/aliases.zsh
+        {{.XDG_CONFIG_HOME}}/zsh/exports.zsh
+        {{.XDG_CONFIG_HOME}}/zsh/functions.zsh
+        {{.XDG_CONFIG_HOME}}/zsh/completions.zsh
+        {{.XDG_CONFIG_HOME}}/zsh/external.zsh
+        {{.XDG_CONFIG_HOME}}/zsh/todos.zsh
+        {{.XDG_CONFIG_HOME}}/git/config
+        {{.XDG_CONFIG_HOME}}/git/ignore
+        {{.XDG_CONFIG_HOME}}/nvim/init.lua
+        ~/.claude/skills
+        ~/.claude/settings.json
+        ~/.claude/CLAUDE.md
+        {{.XDG_CONFIG_HOME}}/mise/config.toml
+        {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml
+        {{.XDG_CONFIG_HOME}}/ghostty/config
+        {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
+        {{.XDG_CONFIG_HOME}}/starship.toml
+        ~/.dprint.json
+        ~/.editorconfig
+        ~/.private
+        {{.XDG_DATA_HOME}}/.oh-my-zsh
     cmds:
-      - |
-          echo "Checking dotfiles symlinks..."
-          echo ""
-
-          echo "=== ZSH Configuration ==="
-          ls -la ~/.zshrc ~/.zshenv 2>/dev/null || echo "⚠️  ZSH rc/env files missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/aliases.zsh 2>/dev/null || echo "⚠️  aliases.zsh missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/exports.zsh 2>/dev/null || echo "⚠️  exports.zsh missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/functions.zsh 2>/dev/null || echo "⚠️  functions.zsh missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/completions.zsh 2>/dev/null || echo "⚠️  completions.zsh missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/external.zsh 2>/dev/null || echo "⚠️  external.zsh missing"
-          ls -la {{.XDG_CONFIG_HOME}}/zsh/todos.zsh 2>/dev/null || echo "⚠️  todos.zsh missing"
-          echo ""
-
-          echo "=== Git Configuration ==="
-          ls -la {{.XDG_CONFIG_HOME}}/git/config 2>/dev/null || echo "⚠️  git config missing"
-          ls -la {{.XDG_CONFIG_HOME}}/git/ignore 2>/dev/null || echo "⚠️  git ignore missing"
-          echo ""
-
-          echo "=== Neovim Editor ==="
-          ls -la {{.XDG_CONFIG_HOME}}/nvim/init.lua 2>/dev/null || echo "⚠️  Neovim config missing"
-          echo ""
-
-          echo "=== Claude Code ==="
-          ls -la ~/.claude/skills 2>/dev/null || echo "⚠️  Claude skills missing"
-          ls -la ~/.claude/settings.json 2>/dev/null || echo "⚠️  Claude settings.json missing"
-          ls -la ~/.claude/CLAUDE.md 2>/dev/null || echo "⚠️  Claude CLAUDE.md missing"
-          echo ""
-
-          echo "=== Mise ==="
-          ls -la {{.XDG_CONFIG_HOME}}/mise/config.toml 2>/dev/null || echo "⚠️  mise config missing"
-          echo ""
-
-          echo "=== Aerospace ==="
-          ls -la {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml 2>/dev/null || echo "⚠️  aerospace config missing"
-          echo ""
-
-          echo "=== Ghostty Terminal ==="
-          ls -la {{.XDG_CONFIG_HOME}}/ghostty/config 2>/dev/null || echo "⚠️  ghostty config missing"
-          echo ""
-
-          echo "=== Starship Prompt ==="
-          ls -la {{.XDG_CONFIG_HOME}}/starship.toml 2>/dev/null || echo "⚠️  Starship config missing"
-          echo ""
-
-          echo "=== Miscellaneous ==="
-          ls -la ~/.dprint.json 2>/dev/null || echo "⚠️  dprint.json missing"
-          ls -la ~/.editorconfig 2>/dev/null || echo "⚠️  editorconfig missing"
-          ls -ld ~/.private 2>/dev/null || echo "⚠️  private directory missing"
-          echo ""
-
-          echo "=== Oh-My-Zsh Installation ==="
-          ls -ld {{.XDG_DATA_HOME}}/.oh-my-zsh 2>/dev/null || echo "⚠️  Oh-My-Zsh not installed"
+      - echo "Checking dotfiles symlinks..."
+      - for: { var: SYMLINKS }
+        cmd: ls -la {{.ITEM}} 2>/dev/null || echo "⚠️  {{.ITEM}} missing"
