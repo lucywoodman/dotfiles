@@ -90,6 +90,11 @@ mktouch() {
 	mkdir -p "$(dirname "$1")" && touch "$1"
 }
 
+# Live markdown preview, re-renders on file save
+mdp() {
+	while glow -p "$1"; do :; done
+}
+
 # Remove macOS system files and hidden directories from current directory
 dot_clean() {
 	find . -name ".DS_Store" -delete 2>/dev/null
