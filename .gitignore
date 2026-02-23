@@ -9,6 +9,7 @@ Thumbs.db
 
 # Private configuration files
 .private/
+.claude/
 dotconfig/claude/settings.json
 
 # Temporary files
