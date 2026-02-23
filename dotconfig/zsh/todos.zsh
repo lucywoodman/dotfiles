@@ -56,6 +56,7 @@ todo() {
 			echo "                           Add with priority and due date"
 			echo "  todo done <number>       Complete todo"
 			echo "  todo drop <number>       Remove todo"
+			echo "  todo view <number>       View todo details"
 			echo "  todo edit <number>       Edit todo in \$EDITOR"
 			echo "  todo today               Show todos completed today"
 			echo ""
@@ -72,6 +73,10 @@ todo() {
 			;;
 		edit)
 			_todo_edit "$2"
+			return
+			;;
+		view)
+			_todo_view "$2"
 			return
 			;;
 		today)
@@ -209,6 +214,48 @@ _todo_edit() {
 	for taskfile in ~/notes/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			${EDITOR:-nvim} "$taskfile"
+			return
+		fi
+		i=$((i + 1))
+	done
+	echo "Todo #$1 not found"
+}
+
+# View todo details (internal)
+_todo_view() {
+	if [ -z "$1" ]; then
+		echo "Usage: todo view <number>"
+		todo
+		return 1
+	fi
+
+	local i=1
+	for taskfile in ~/notes/tasks/active/*.md(N); do
+		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
+			local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
+			local priority=$(grep "^priority:" "$taskfile" 2>/dev/null | sed 's/^priority: *//' | tr -d ' ')
+			local created=$(grep "^created:" "$taskfile" 2>/dev/null | sed 's/^created: *//' | tr -d ' ')
+			local due=$(grep "^due:" "$taskfile" 2>/dev/null | sed 's/^due: *//' | tr -d ' ')
+
+			local badge=""
+			[ "$priority" = "high" ] && badge="🔴 "
+			[ "$priority" = "medium" ] && badge="🟡 "
+			[ "$priority" = "low" ] && badge="🟢 "
+
+			local meta="**Priority:** ${badge}${priority} · **Created:** ${created}"
+			[ -n "$due" ] && meta="${meta} · **Due:** ${due}"
+
+			# Extract body after frontmatter (everything after second ---)
+			local body=$(awk 'BEGIN{n=0} /^---$/{n++; next} n>=2 && !/^# Task:/' "$taskfile")
+
+			{
+				echo "# ${title}"
+				echo ""
+				echo "${meta}"
+				echo ""
+				echo "---"
+				echo "${body}"
+			} | glow -
 			return
 		fi
 		i=$((i + 1))
