@@ -34,6 +34,8 @@
   force-safe = push --force-with-lease
   # Delete branches with gone remotes
   gone = "!f() { git fetch --all --prune; git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D; }; f"
+  # Quick switch to default branch
+  home = "!git switch $(git db)"
   # Show last commit with stats
   last = log -1 HEAD --stat
   # Pretty log graph
