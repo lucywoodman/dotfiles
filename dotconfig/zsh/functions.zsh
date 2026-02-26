@@ -168,6 +168,10 @@ wt() {
 		else
 			git worktree add "$wt_dir" -b "$branch" || return 1
 		fi
+
+		# Symlink .claude/ to parent repo so session data survives worktree deletion
+		mkdir -p "$root/.claude"
+		ln -s "$root/.claude" "$wt_dir/.claude"
 	fi
 
 	# Open in tmux window or just cd
@@ -203,10 +207,20 @@ wts() {
 
 # Remove a worktree and optionally delete the branch
 wtd() {
-	local branch="${1:-$(git branch --show-current)}"
+	local force=false
+	local branch=""
+
+	for arg in "$@"; do
+		case "$arg" in
+			-f|--force) force=true ;;
+			*) branch="$arg" ;;
+		esac
+	done
+
+	branch="${branch:-$(git branch --show-current)}"
 
 	if [ -z "$branch" ]; then
-		echo "Usage: wtd <branch> (or run from within a worktree branch)"
+		echo "Usage: wtd [-f|--force] <branch> (or run from within a worktree branch)"
 		return 1
 	fi
 
@@ -223,14 +237,22 @@ wtd() {
 		"$wt_dir"*) cd "$root" ;;
 	esac
 
-	# Remove the worktree (refuses if dirty)
-	git worktree remove "$wt_dir" || return 1
+	# Remove the worktree (--force allows dirty trees)
+	if $force; then
+		git worktree remove --force "$wt_dir" || return 1
+	else
+		git worktree remove "$wt_dir" || return 1
+	fi
 
-	# Prompt to delete the branch
+	# Prompt to delete the branch (-D forces unmerged branch deletion)
 	printf "Delete branch '%s'? [y/N] " "$branch"
 	read -r reply
 	if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
-		git branch -d "$branch"
+		if $force; then
+			git branch -D "$branch"
+		else
+			git branch -d "$branch"
+		fi
 	fi
 
 	# Close the tmux window if it exists

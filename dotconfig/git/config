@@ -64,8 +64,8 @@
   wta = "!f() { root=$(git worktree list --porcelain | head -1 | sed 's/worktree //'); git worktree add \"${root}/../$(basename ${root})-worktrees/$1\" -b \"$1\"; }; f"
   # List all worktrees
   wtl = worktree list
-  # Remove a worktree (../repo-worktrees/branch)
-  wtr = "!f() { root=$(git worktree list --porcelain | head -1 | sed 's/worktree //'); git worktree remove \"${root}/../$(basename ${root})-worktrees/$1\"; }; f"
+  # Remove a worktree (../repo-worktrees/branch). Use: git wtr <branch> [--force]
+  wtr = "!f() { root=$(git worktree list --porcelain | head -1 | sed 's/worktree //'); branch=\"$1\"; shift; git worktree remove \"$@\" \"${root}/../$(basename ${root})-worktrees/$branch\"; }; f"
 
 [commit]
   gpgsign = true
