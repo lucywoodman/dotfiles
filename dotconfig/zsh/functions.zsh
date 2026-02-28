@@ -71,8 +71,8 @@ optional_s() {
 # Navigation Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Navigate to workspace, optionally into a GitHub org/repo (e.g. workspace org/repo)
-workspace() {
+# Navigate to workspace, optionally into a GitHub org/repo (e.g. ws org/repo)
+ws() {
 	cd "$HOME/workspace/${1:+github.com/$1}"
 }
 

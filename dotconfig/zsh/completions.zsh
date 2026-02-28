@@ -47,6 +47,17 @@ unset __fzf_tab_flags
 # - https://github.com/Freed-Wu/fzf-tab-source
 # - https://github.com/DanielFGray/fzf-scripts
 
+# Complete `ws` with org/repo paths from ~/workspace/github.com
+_ws() {
+  local base="$HOME/workspace/github.com"
+  local -a repos
+  for dir in "$base"/*/*(/); do
+    repos+=("${dir#$base/}")
+  done
+  _describe 'org/repo' repos
+}
+compdef _ws ws
+
 # Complete `fzf`
 compdef _gnu_generic fzf
 
