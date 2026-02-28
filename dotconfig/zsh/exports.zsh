@@ -23,6 +23,9 @@ add_to_path "$HOME/.config/composer/vendor/bin"
 # MySQL client tools (installed as keg-only by Homebrew)
 add_to_path "/opt/homebrew/opt/mysql@8.4/bin"
 
+# Obsidian CLI (enabled via Obsidian settings)
+add_to_path "/Applications/Obsidian.app/Contents/MacOS"
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Homebrew Configuration
 # ═══════════════════════════════════════════════════════════════════════════
