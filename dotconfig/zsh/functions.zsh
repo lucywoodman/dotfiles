@@ -187,7 +187,7 @@ wts() {
 	local selected
 	selected=$(git worktree list | fzf \
 		--prompt="worktree> " \
-		--preview='git log --oneline -10 --color=always {2}' \
+		--preview='git -C {1} log --oneline -10 --color=always' \
 		--preview-window=right:50%) || return
 
 	local wt_path branch
