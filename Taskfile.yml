@@ -92,6 +92,7 @@ tasks:
     cmds:
       - mkdir -p ~/.claude
       - ln -sfn {{.DOTFILES_DIR}}/dotconfig/claude/skills ~/.claude/skills
+      - ln -sfn {{.DOTFILES_DIR}}/dotconfig/claude/agents ~/.claude/agents
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/settings.json ~/.claude/settings.json
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/claude/CLAUDE.md ~/.claude/CLAUDE.md
 
@@ -152,7 +153,7 @@ tasks:
     prompt: This will remove symlinks to dotfiles. Continue?
     cmds:
       - rm -f ~/.zshrc ~/.zshenv ~/.dprint.json ~/.editorconfig
-      - rm -rf ~/.claude/skills ~/.claude/settings.json ~/.claude/CLAUDE.md
+      - rm -rf ~/.claude/skills ~/.claude/agents ~/.claude/settings.json ~/.claude/CLAUDE.md
       - rm -rf {{.XDG_CONFIG_HOME}}/zsh
       - rm -rf {{.XDG_CONFIG_HOME}}/git
       - rm -rf {{.XDG_CONFIG_HOME}}/nvim
@@ -197,6 +198,7 @@ tasks:
         {{.XDG_CONFIG_HOME}}/git/ignore
         {{.XDG_CONFIG_HOME}}/nvim/init.lua
         ~/.claude/skills
+        ~/.claude/agents
         ~/.claude/settings.json
         ~/.claude/CLAUDE.md
         {{.XDG_CONFIG_HOME}}/mise/config.toml
