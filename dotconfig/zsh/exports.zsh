@@ -17,6 +17,9 @@ add_to_path() {
 add_to_path "vendor/bin"                # Project-specific PHP dependencies
 add_to_path "node_modules/.bin"         # Project-specific Node modules
 
+# Personal scripts and tools
+add_to_path "$HOME/.local/bin"
+
 # Composer global binaries (phpcs, etc.)
 add_to_path "$HOME/.config/composer/vendor/bin"
 
@@ -25,6 +28,9 @@ add_to_path "/opt/homebrew/opt/mysql@8.4/bin"
 
 # Obsidian CLI (enabled via Obsidian settings)
 add_to_path "/Applications/Obsidian.app/Contents/MacOS"
+
+# Mason LSP servers (shared with Claude Code and other tools)
+add_to_path "$HOME/.local/share/nvim/mason/bin"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Homebrew Configuration
