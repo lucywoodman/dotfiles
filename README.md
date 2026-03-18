@@ -26,8 +26,10 @@ dotconfig/       # XDG-compliant app configurations
 ├── git/         # Git configurations
 ├── nvim/        # Neovim editor config
 ├── aerospace/   # Tiling window manager config
-├── claude/      # Claude Code skills and settings
+├── claude/      # Claude Code agents, skills, and settings
+├── ghostty/     # Ghostty terminal config
 ├── mise/        # Runtime version manager config
+├── tmux/        # tmux multiplexer config
 ├── starship.toml
 ├── dprint.json
 └── editorconfig
@@ -43,7 +45,7 @@ Brewfile         # Homebrew package management
 - **Shell**: zsh with Oh-My-Zsh, Starship prompt, XDG-compliant configuration
 - **Development stack**: `mise` for version management (Node, Python, Go, Terraform, Kubernetes tools), PHP via Homebrew
 - **Productivity apps**: 1Password, Alfred, Obsidian, AeroSpace, Ghostty
-- **Development tools**: Claude Code, Neovim
+- **Development tools**: Claude Code, Neovim, tmux
 - **1Password integration**: SSH agent and CLI tools authentication
 
 ## Task Commands
