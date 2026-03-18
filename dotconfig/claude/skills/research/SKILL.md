@@ -43,6 +43,11 @@ Then wait for the user's research query.
    - Create multiple Task agents to research different aspects concurrently
    - We now have specialized agents that know how to do specific research tasks:
 
+   **For existing research & notes:**
+   - Use the **thoughts-locator** agent to find related documents in ~/thoughts/
+   - Use the **thoughts-analyzer** agent to extract insights from relevant documents found
+   - Check existing research FIRST to avoid duplicating work
+
    **For codebase research:**
    - Use the **codebase-locator** agent to find WHERE files and components live
    - Use the **codebase-analyzer** agent to understand HOW specific code works (without critiquing it)
@@ -54,12 +59,9 @@ Then wait for the user's research query.
    - Use the **web-search-researcher** agent for external documentation and resources
    - IF you use web-research agents, instruct them to return LINKS with their findings, and please INCLUDE those links in your final report
 
-   **For Linear tickets (if relevant):**
-   - Use the **linear-ticket-reader** agent to get full details of a specific ticket
-   - Use the **linear-searcher** agent to find related tickets or historical context
-
    The key is to use these agents intelligently:
-   - Start with locator agents to find what exists
+   - Start with thoughts-locator to check for existing research on the topic
+   - Use codebase locator agents to find what exists in the code
    - Then use analyzer agents on the most promising findings to document how they work
    - Run multiple agents in parallel when they're searching for different things
    - Each agent knows its job - just tell it what you're looking for
