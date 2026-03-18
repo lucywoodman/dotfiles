@@ -171,6 +171,7 @@ wt() {
 
 		# Symlink .claude/ to parent repo so session data survives worktree deletion
 		mkdir -p "$root/.claude"
+		rm -rf "$wt_dir/.claude"
 		ln -s "$root/.claude" "$wt_dir/.claude"
 	fi
 

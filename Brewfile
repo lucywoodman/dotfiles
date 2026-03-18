@@ -12,6 +12,7 @@ brew 'fzf'        # Fuzzy finder
 brew 'lolcat'     # Rainbow colored text output
 brew 'hexyl'      # Hex viewer (for fzf previews)
 brew 'htop'       # Interactive process viewer
+brew 'imagemagick' # Image manipulation and conversion toolkit
 brew 'ical-buddy' # Query macOS Calendar from CLI
 brew 'jless'      # JSON viewer and processor
 brew 'jq'         # JSON processor
@@ -61,7 +62,6 @@ brew 'composer'   # PHP package manager
 # Cloud & Container Tools
 brew 'heroku'     # Heroku CLI for app deployment
 brew 'kubectx'    # Kubernetes context switcher
-brew 'terraform-ls' # Terraform language server
 brew 'docker'     # Container runtime
 brew 'ctop'       # Container monitoring
 brew 'lazydocker' # Docker TUI manager
