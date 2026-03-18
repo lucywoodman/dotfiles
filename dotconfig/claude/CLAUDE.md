@@ -45,4 +45,8 @@ Find root cause, never fix symptoms. Read errors carefully, reproduce consistent
 - Match existing code style within files
 - Preserve comments unless provably false
 - Get permission before: backward compatibility, rewriting implementations, breaking any of these rules
-- Use TodoWrite to track work
+- Use TaskCreate to track work
+
+## Conventions
+
+- Research documents, plans, and session artifacts live in `~/thoughts/shared/` — referenced by `/research`, `/scope`, `/validate`, and `/handoff`
