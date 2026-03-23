@@ -34,6 +34,8 @@
   force-safe = push --force-with-lease
   # Delete branches with gone remotes (skips worktree branches)
   gone = "!f() { git fetch --all --prune; git branch -vv | awk '/: gone]/ { if ($1 == \"+\") { printf \"\\033[33mskipped (worktree):\\033[0m %s\\n\", $2 > \"/dev/stderr\" } else { print $1 } }' | xargs -r git branch -D; }; f"
+  # List stale branches (gone remotes, old local-only, old remote-only)
+  stale = "!bash \"${XDG_CONFIG_HOME:-$HOME/.config}/git/scripts/git-stale\""
   # Quick switch to default branch
   home = "!git switch $(git db)"
   # Show last commit with stats

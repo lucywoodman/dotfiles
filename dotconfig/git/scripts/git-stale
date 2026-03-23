@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#
+# git-stale: List branches that are candidates for deletion.
+#
+# Categories:
+#   1. Local branches whose remote tracking branch is gone
+#   2. Local-only branches with no commits in the last N months
+#   3. Remote-only branches with no commits in the last N months
+#
+# Usage: git stale [months]   (default: 6)
+
+set -euo pipefail
+
+MONTHS="${1:-6}"
+CUTOFF=$(date -v-"${MONTHS}"m +%s 2>/dev/null || date -d "${MONTHS} months ago" +%s)
+
+# Resolve the default branch and current branch (never flag these)
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||') || DEFAULT_BRANCH="main"
+CURRENT_BRANCH=$(git branch --show-current 2>/dev/null) || CURRENT_BRANCH=""
+
+# Collect branches checked out in worktrees (these are always in use)
+worktree_branches=$(git worktree list --porcelain 2>/dev/null | sed -n 's/^branch refs\/heads\///p')
+
+is_worktree() {
+  echo "$worktree_branches" | grep -Fxq "$1" 2>/dev/null
+}
+
+# Build lists of local and remote branch names
+local_refs=$(git for-each-ref --format='%(refname:short)	%(committerdate:unix)	%(upstream)' refs/heads/)
+remote_refs=$(git for-each-ref --format='%(refname:lstrip=3)	%(committerdate:unix)' refs/remotes/origin/)
+
+# Extract just the branch names for lookups
+local_names=$(echo "$local_refs" | cut -f1)
+remote_names=$(echo "$remote_refs" | cut -f1 | grep -v '^HEAD$' || true)
+
+gone=""
+stale_local=""
+stale_remote=""
+
+# Check local branches
+while IFS=$'\t' read -r branch date upstream; do
+  [ -z "$branch" ] && continue
+  [ "$branch" = "$DEFAULT_BRANCH" ] && continue
+  [ "$branch" = "$CURRENT_BRANCH" ] && continue
+  is_worktree "$branch" && continue
+
+  # Category 1: tracking branch is gone (remote was deleted)
+  if [ -n "$upstream" ] && ! git rev-parse --verify "$upstream" >/dev/null 2>&1; then
+    gone="${gone}  ${branch}\n"
+    continue
+  fi
+
+  # Category 2: local-only (no remote) and stale
+  has_remote=$(echo "$remote_names" | grep -Fx "$branch" || true)
+  if [ -z "$has_remote" ] && [ -z "$upstream" ]; then
+    if [ "$date" -lt "$CUTOFF" ]; then
+      age=$(( ($(date +%s) - date) / 86400 ))
+      stale_local="${stale_local}$(printf '  %-40s (%s days old)\n' "$branch" "$age")\n"
+    fi
+  fi
+done <<< "$local_refs"
+
+# Category 3: remote-only (no local) and stale
+while IFS=$'\t' read -r branch date; do
+  [ -z "$branch" ] && continue
+  [ "$branch" = "HEAD" ] && continue
+  [ "$branch" = "$DEFAULT_BRANCH" ] && continue
+  [ "$branch" = "$CURRENT_BRANCH" ] && continue
+
+  has_local=$(echo "$local_names" | grep -Fx "$branch" || true)
+  if [ -z "$has_local" ]; then
+    if [ "$date" -lt "$CUTOFF" ]; then
+      age=$(( ($(date +%s) - date) / 86400 ))
+      stale_remote="${stale_remote}$(printf '  %-40s (%s days old)\n' "$branch" "$age")\n"
+    fi
+  fi
+done <<< "$remote_refs"
+
+# Output
+found=0
+
+if [ -n "$gone" ]; then
+  found=1
+  printf '\033[1;31m--- Gone remotes ---\033[0m\n'
+  printf '  (local branch tracking a deleted remote)\n'
+  printf "$gone"
+  echo
+fi
+
+if [ -n "$stale_local" ]; then
+  found=1
+  printf '\033[1;33m--- Stale local-only (no remote, >%s months) ---\033[0m\n' "$MONTHS"
+  printf "$stale_local"
+  echo
+fi
+
+if [ -n "$stale_remote" ]; then
+  found=1
+  printf '\033[1;36m--- Stale remote-only (no local, >%s months) ---\033[0m\n' "$MONTHS"
+  printf "$stale_remote"
+  echo
+fi
+
+if [ "$found" -eq 0 ]; then
+  printf '\033[32mNo stale branches found.\033[0m\n'
+fi
