@@ -90,7 +90,6 @@
 
 [init]
   defaultBranch = main
-  templateDir = "~/.git-template"
 
 [push]
   autosetupremote = true
