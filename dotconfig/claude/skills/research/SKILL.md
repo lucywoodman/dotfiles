@@ -44,7 +44,7 @@ Then wait for the user's research query.
    - We now have specialized agents that know how to do specific research tasks:
 
    **For existing research & notes:**
-   - Use the **thoughts-locator** agent to find related documents in ~/thoughts/
+   - Use the **thoughts-locator** agent to find related documents in ~/thoughts/references/
    - Use the **thoughts-analyzer** agent to extract insights from relevant documents found
    - Check existing research FIRST to avoid duplicating work
 
@@ -79,14 +79,14 @@ Then wait for the user's research query.
 
 5. **Gather metadata for the research document:**
    - Run Bash() tools to generate all relevant metadata
-   - Filename: `~/thoughts/shared/research/YYYY-MM-DD-ENG-XXXX-description.md`
-     - Format: `YYYY-MM-DD-ENG-XXXX-description.md` where:
+   - Filename: `~/thoughts/references/YYYY-MM-DD-research-ENG-XXXX-description.md`
+     - Format: `YYYY-MM-DD-research-ENG-XXXX-description.md` where:
        - YYYY-MM-DD is today's date
        - ENG-XXXX is the ticket number (omit if no ticket)
        - description is a brief kebab-case description of the research topic
      - Examples:
-       - With ticket: `~/thoughts/shared/research/2025-01-08-ENG-1478-parent-child-tracking.md`
-       - Without ticket: `~/thoughts/shared/research/2025-01-08-authentication-flow.md`
+       - With ticket: `~/thoughts/references/2025-01-08-research-ENG-1478-parent-child-tracking.md`
+       - Without ticket: `~/thoughts/references/2025-01-08-research-authentication-flow.md`
 
 6. **Generate research document:**
    - Use the metadata gathered in step 4
@@ -137,7 +137,7 @@ Then wait for the user's research query.
      [Current patterns, conventions, and design implementations found in the codebase]
 
      ## Related Research
-     [Links to other research documents in ~/thoughts/shared/research/]
+     [Links to other research documents in ~/thoughts/references/]
 
      ## Open Questions
      [Any areas that need further investigation]

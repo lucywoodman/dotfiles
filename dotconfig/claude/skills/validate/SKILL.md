@@ -11,8 +11,8 @@ Validate the current implementation against a plan file's success criteria.
 
 1. **Locate the plan file:**
    - If `$ARGUMENTS` is a path: read that file directly
-   - If `$ARGUMENTS` is a search term: look for a matching file in `~/thoughts/shared/plans/`
-   - If `$ARGUMENTS` is empty: use the most recently modified file in `~/thoughts/shared/plans/`
+   - If `$ARGUMENTS` is a search term: look for a matching file in `~/thoughts/references/` (plan files are named `YYYY-MM-DD-plan-*.md`)
+   - If `$ARGUMENTS` is empty: use the most recently modified plan file in `~/thoughts/references/` (match `*-plan-*.md`)
    - If no plan file is found, say so and stop
 
 2. **Read the plan file** and extract:

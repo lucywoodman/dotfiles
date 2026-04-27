@@ -23,7 +23,7 @@ Capture the current session state so the next session can continue seamlessly.
    - Commands or approaches that failed (so they're not retried)
 
 3. **Check for an active plan file:**
-   - Look for the most recent file in `~/thoughts/shared/plans/`
+   - Look for the most recent plan file in `~/thoughts/references/` (match `*-plan-*.md`)
    - If one exists and relates to the current work, note its path
 
 4. **Write the handoff file:**
@@ -65,7 +65,7 @@ git log --oneline -3
 ```
 
 ## Plan Reference
-[Path to active plan file, if any: ~/thoughts/shared/plans/YYYY-MM-DD-description.md]
+[Path to active plan file, if any: ~/thoughts/references/YYYY-MM-DD-plan-description.md]
 ```
 
 ## Important

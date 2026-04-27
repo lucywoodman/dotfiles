@@ -20,10 +20,9 @@ Fetch ticket $ARGUMENTS and enter plan mode.
 3. **Enter plan mode** to explore the codebase and plan the implementation.
 
 4. **After planning is complete**, write the plan to a file for persistence:
-   - Path: `~/thoughts/shared/plans/YYYY-MM-DD-TICKET-description.md`
+   - Path: `~/thoughts/references/YYYY-MM-DD-plan-TICKET-description.md`
      - TICKET is the ticket key (e.g. SRET-123) or issue number — omit if none
      - description is a brief kebab-case summary
-   - Create `~/thoughts/shared/plans/` if it doesn't exist
 
 ## Plan File Format
 

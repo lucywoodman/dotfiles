@@ -4,19 +4,19 @@
 # Todo Management Functions
 # ═══════════════════════════════════════════════════════════════════════════
 # Todos are stored as markdown files:
-#   ~/notes/tasks/active/    - current todos
-#   ~/notes/tasks/completed/ - done todos (with completed: date in frontmatter)
+#   ~/thoughts/tasks/active/    - current todos
+#   ~/thoughts/tasks/completed/ - done todos (with completed: date in frontmatter)
 
 # List or add todos
 todo() {
-	mkdir -p ~/notes/tasks/active ~/notes/tasks/completed
+	mkdir -p ~/thoughts/tasks/active ~/thoughts/tasks/completed
 
 	if [ -z "$1" ]; then
 		# No args - list todos
 		echo "📋 Active Todos"
 		echo ""
 		local i=1
-		for taskfile in ~/notes/tasks/active/*.md(N); do
+		for taskfile in ~/thoughts/tasks/active/*.md(N); do
 			if [ -f "$taskfile" ]; then
 				local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
 				local priority=$(grep "^priority:" "$taskfile" 2>/dev/null | sed 's/^priority: *//' | tr -d ' ')
@@ -115,7 +115,7 @@ todo() {
 
 	local date_prefix=$(date +%Y-%m-%d)
 	local slug=$(echo "$description" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-' | cut -c1-40)
-	local file=~/notes/tasks/active/${date_prefix}-${slug}.md
+	local file=~/thoughts/tasks/active/${date_prefix}-${slug}.md
 
 	# Handle collision by appending a number
 	if [ -f "$file" ]; then
@@ -149,7 +149,7 @@ EOF
 	[ -n "$due" ] && due_msg=" (due: $due)"
 
 	echo "✅ Task added: $badge $description$due_msg"
-	local count=$(ls -1 ~/notes/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
+	local count=$(ls -1 ~/thoughts/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
 	echo "   Active tasks: $count"
 }
 
@@ -162,16 +162,16 @@ _todo_done() {
 	fi
 
 	local i=1
-	for taskfile in ~/notes/tasks/active/*.md(N); do
+	for taskfile in ~/thoughts/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
 			# Add completed date after the opening ---
 			sed -i '' "/^---$/a\\
 completed: $(date +%Y-%m-%d)
 " "$taskfile"
-			mv "$taskfile" ~/notes/tasks/completed/
+			mv "$taskfile" ~/thoughts/tasks/completed/
 			echo "✅ Completed: $title"
-			local remaining=$(ls -1 ~/notes/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
+			local remaining=$(ls -1 ~/thoughts/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
 			echo "   Remaining: $remaining tasks"
 			return
 		fi
@@ -190,7 +190,7 @@ _todo_drop() {
 	fi
 
 	local i=1
-	for taskfile in ~/notes/tasks/active/*.md(N); do
+	for taskfile in ~/thoughts/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
 			rm "$taskfile"
@@ -211,7 +211,7 @@ _todo_edit() {
 	fi
 
 	local i=1
-	for taskfile in ~/notes/tasks/active/*.md(N); do
+	for taskfile in ~/thoughts/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			${EDITOR:-nvim} "$taskfile"
 			return
@@ -230,7 +230,7 @@ _todo_view() {
 	fi
 
 	local i=1
-	for taskfile in ~/notes/tasks/active/*.md(N); do
+	for taskfile in ~/thoughts/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
 			local priority=$(grep "^priority:" "$taskfile" 2>/dev/null | sed 's/^priority: *//' | tr -d ' ')
@@ -270,7 +270,7 @@ _todo_today() {
 	echo ""
 
 	local found=0
-	for taskfile in ~/notes/tasks/completed/*.md(N); do
+	for taskfile in ~/thoughts/tasks/completed/*.md(N); do
 		if [ -f "$taskfile" ]; then
 			local completed=$(grep "^completed:" "$taskfile" 2>/dev/null | sed 's/^completed: *//' | tr -d ' ')
 			if [ "$completed" = "$today" ]; then

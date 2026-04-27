@@ -8,6 +8,7 @@ ehthumbs.db
 Thumbs.db
 
 # Private configuration files
+.envrc
 .private/
 .claude/
 dotconfig/claude/settings.json

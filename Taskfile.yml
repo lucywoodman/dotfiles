@@ -24,7 +24,7 @@ tasks:
   directories:
     desc: Create necessary directories (XDG, workspace, etc.)
     cmds:
-      - mkdir -p ~/notes
+      - mkdir -p ~/thoughts
       - mkdir -p ~/workspace
       - mkdir -p {{.XDG_CONFIG_HOME}}
       - mkdir -p {{.XDG_DATA_HOME}}
@@ -34,7 +34,7 @@ tasks:
       - mkdir -p {{.XDG_CACHE_HOME}}/zsh
       - mkdir -p {{.XDG_DATA_HOME}}/terminfo
     status:
-      - test -d ~/notes
+      - test -d ~/thoughts
       - test -d ~/workspace
       - test -d {{.XDG_CONFIG_HOME}}
       - test -d {{.XDG_DATA_HOME}}
@@ -167,19 +167,19 @@ tasks:
 
   # === Personal Management System ===
   notes:init:
-    desc: Initialize personal management directory under ~/notes
+    desc: Initialize personal management directory under ~/thoughts
     cmds:
-      - mkdir -p ~/notes/pm-system
-      - mkdir -p ~/notes/pm-system/planning
-      - mkdir -p ~/notes/pm-system/planning/quarters
-      - mkdir -p ~/notes/pm-system/planning/months
-      - mkdir -p ~/notes/pm-system/planning/weeks
+      - mkdir -p ~/thoughts/pm-system
+      - mkdir -p ~/thoughts/pm-system/planning
+      - mkdir -p ~/thoughts/pm-system/planning/quarters
+      - mkdir -p ~/thoughts/pm-system/planning/months
+      - mkdir -p ~/thoughts/pm-system/planning/weeks
     status:
-      - test -d ~/notes/pm-system
-      - test -d ~/notes/pm-system/planning
-      - test -d ~/notes/pm-system/planning/quarters
-      - test -d ~/notes/pm-system/planning/months
-      - test -d ~/notes/pm-system/planning/weeks
+      - test -d ~/thoughts/pm-system
+      - test -d ~/thoughts/pm-system/planning
+      - test -d ~/thoughts/pm-system/planning/quarters
+      - test -d ~/thoughts/pm-system/planning/months
+      - test -d ~/thoughts/pm-system/planning/weeks
 
   check:
     desc: Check which symlinks are properly configured

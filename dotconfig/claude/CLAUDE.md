@@ -49,4 +49,7 @@ Find root cause, never fix symptoms. Read errors carefully, reproduce consistent
 
 ## Conventions
 
-- Research documents, plans, and session artifacts live in `~/thoughts/shared/` — referenced by `/research`, `/scope`, `/validate`, and `/handoff`
+- Research documents, plans, and weekly logs live in `~/thoughts/references/` — referenced by `/research`, `/scope`, `/validate`, `/handoff`, `/today`, and `/retro`
+  - Research: `YYYY-MM-DD-research-description.md`
+  - Plans: `YYYY-MM-DD-plan-description.md`
+  - Weekly: `YYYY-Www-weekly.md`

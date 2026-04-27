@@ -14,7 +14,7 @@ Resume work from where the last session left off.
    - Note the date to gauge how stale the handoff is
 
 2. **Read the referenced plan file (if linked):**
-   - If the handoff references a plan in `~/thoughts/shared/plans/`, read it
+   - If the handoff references a plan in `~/thoughts/references/`, read it
    - Extract the success criteria and remaining work
 
 3. **Verify current state matches the handoff:**
