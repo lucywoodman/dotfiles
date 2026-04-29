@@ -60,6 +60,7 @@ tasks:
       - task: link:aerospace
       - task: link:ghostty
       - task: link:tmux
+      - task: link:yazi
       - task: link:private
 
   link:zsh:
@@ -131,6 +132,13 @@ tasks:
       - mkdir -p {{.XDG_CONFIG_HOME}}/tmux
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/tmux/tmux.conf {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
 
+  link:yazi:
+    desc: Symlink yazi file manager configuration
+    cmds:
+      - mkdir -p {{.XDG_CONFIG_HOME}}/yazi
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/yazi.toml {{.XDG_CONFIG_HOME}}/yazi/yazi.toml
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/keymap.toml {{.XDG_CONFIG_HOME}}/yazi/keymap.toml
+
   link:private:
     desc: Symlink private files (not version controlled)
     cmds:
@@ -161,6 +169,7 @@ tasks:
       - rm -rf {{.XDG_CONFIG_HOME}}/aerospace
       - rm -rf {{.XDG_CONFIG_HOME}}/ghostty
       - rm -rf {{.XDG_CONFIG_HOME}}/tmux
+      - rm -rf {{.XDG_CONFIG_HOME}}/yazi
       - rm -f {{.XDG_CONFIG_HOME}}/starship.toml
       - rm -rf ~/.private
       - echo "Symlinks removed"
@@ -205,6 +214,8 @@ tasks:
         {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml
         {{.XDG_CONFIG_HOME}}/ghostty/config
         {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
+        {{.XDG_CONFIG_HOME}}/yazi/yazi.toml
+        {{.XDG_CONFIG_HOME}}/yazi/keymap.toml
         {{.XDG_CONFIG_HOME}}/starship.toml
         ~/.dprint.json
         ~/.editorconfig

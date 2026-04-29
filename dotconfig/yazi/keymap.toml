@@ -1,0 +1,4 @@
+# Yazi keymap configuration
+# https://yazi-rs.github.io/docs/configuration/keymap
+
+# Only overrides — Yazi's defaults (vim-style hjkl, enter to open, etc.) are good

@@ -25,6 +25,7 @@ brew 'ripgrep'    # Fast grep alternative
 brew 'starship'   # Cross-shell prompt
 brew 'tz'         # Time zone aware calendar and clock
 brew 'watch'      # Execute command periodically
+brew 'yazi'       # Terminal file manager with previews
 brew 'tmux'       # Terminal multiplexer
 brew 'zoxide'     # Shell extension to navigate faster
 

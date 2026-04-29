@@ -71,6 +71,17 @@ optional_s() {
 # Navigation Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
+# Yazi file manager wrapper — cd to last visited directory on exit
+y() {
+	local tmp
+	tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
 # Navigate to workspace, optionally into a GitHub org/repo (e.g. ws org/repo)
 ws() {
 	cd "$HOME/workspace/${1:+github.com/$1}"
