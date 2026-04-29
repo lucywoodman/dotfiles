@@ -384,37 +384,32 @@ return {
     opts = {},
   },
 
-  -- ===== File Explorer (tree sidebar) =====
+  -- ===== File Explorer (yazi floating window) =====
   {
-    "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    lazy = false,
+    "mikavilpas/yazi.nvim",
+    version = "*",
+    event = "VeryLazy",
+    dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
-      { "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "Toggle file explorer" },
-      { "<leader>o", "<cmd>NvimTreeFocus<cr>", desc = "Focus file explorer" },
+      { "<leader>e", "<cmd>Yazi cwd<cr>", desc = "Open yazi in working directory" },
+      { "<leader>o", "<cmd>Yazi<cr>", desc = "Open yazi at current file" },
+      { "<leader>y", "<cmd>Yazi toggle<cr>", desc = "Resume last yazi session" },
     },
     opts = {
-      hijack_netrw = true,
-      sync_root_with_cwd = true,
-      update_focused_file = {
-        enable = true,
+      open_for_directories = true,
+      keymaps = {
+        show_help = "<f1>",
+        open_file_in_vertical_split = "<c-v>",
+        open_file_in_horizontal_split = "<c-x>",
+        grep_in_directory = "<c-s>",
+        replace_in_directory = "<c-g>",
       },
-      view = {
-        side = "left",
-        width = 40,
+      integrations = {
+        grep_in_directory = "telescope",
       },
     },
     init = function()
-      -- Open nvim-tree on startup
-      vim.api.nvim_create_autocmd("VimEnter", {
-        callback = function()
-          if vim.fn.argc() == 0 then
-            require("nvim-tree.api").tree.open()
-          else
-            require("nvim-tree.api").tree.find_file({ open = true, focus = false })
-          end
-        end,
-      })
+      vim.g.loaded_netrwPlugin = 1
     end,
   },
 }
