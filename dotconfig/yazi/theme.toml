@@ -1,0 +1,8 @@
+# Yazi theme overrides
+# https://yazi-rs.github.io/docs/configuration/theme
+
+[plugin]
+prepend_linemode = [
+  { id = "git", name = "*" },
+  { id = "git", name = "*/" },
+]

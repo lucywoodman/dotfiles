@@ -138,6 +138,8 @@ tasks:
       - mkdir -p {{.XDG_CONFIG_HOME}}/yazi
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/yazi.toml {{.XDG_CONFIG_HOME}}/yazi/yazi.toml
       - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/keymap.toml {{.XDG_CONFIG_HOME}}/yazi/keymap.toml
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/theme.toml {{.XDG_CONFIG_HOME}}/yazi/theme.toml
+      - ln -sf {{.DOTFILES_DIR}}/dotconfig/yazi/init.lua {{.XDG_CONFIG_HOME}}/yazi/init.lua
 
   link:private:
     desc: Symlink private files (not version controlled)
@@ -216,6 +218,8 @@ tasks:
         {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
         {{.XDG_CONFIG_HOME}}/yazi/yazi.toml
         {{.XDG_CONFIG_HOME}}/yazi/keymap.toml
+        {{.XDG_CONFIG_HOME}}/yazi/theme.toml
+        {{.XDG_CONFIG_HOME}}/yazi/init.lua
         {{.XDG_CONFIG_HOME}}/starship.toml
         ~/.dprint.json
         ~/.editorconfig
