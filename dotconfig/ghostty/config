@@ -1,6 +1,12 @@
 # Ghostty terminal configuration
 # https://ghostty.org/docs/config
 
+# Theme
+theme = catppuccin-mocha
+
+# Font
+font-family = FiraCode Nerd Font
+
 # Keybindings
 keybind = shift+enter=text:\n
 

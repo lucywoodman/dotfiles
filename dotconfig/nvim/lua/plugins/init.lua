@@ -2,27 +2,39 @@
 -- ====================================
 
 return {
-  -- ===== Colorscheme (everforest) =====
+  -- ===== Colorscheme (catppuccin mocha) =====
   {
-    "sainnhe/everforest",
+    "catppuccin/nvim",
+    name = "catppuccin",
     lazy = false,
     priority = 1000,
-    config = function()
-      vim.g.everforest_background = "medium"
-      vim.g.everforest_better_performance = 1
-      vim.cmd.colorscheme("everforest")
+    opts = {
+      flavour = "mocha",
+      integrations = {
+        cmp = true,
+        gitsigns = true,
+        indent_blankline = { enabled = true },
+        telescope = { enabled = true },
+        which_key = true,
+        dap = true,
+        dap_ui = true,
+      },
+    },
+    config = function(_, opts)
+      require("catppuccin").setup(opts)
+      vim.cmd.colorscheme("catppuccin")
     end,
   },
 
   -- ===== Statusline =====
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = { "nvim-tree/nvim-web-devicons", "catppuccin" },
     opts = {
       options = {
-        theme = "everforest",
-        component_separators = "|",  -- separator = "|" from Helix
-        section_separators = "",
+        theme = "auto",
+        component_separators = "|",
+        section_separators = { left = "", right = "" },
       },
       sections = {
         -- left = ["mode", "spinner", "version-control"]

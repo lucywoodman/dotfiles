@@ -1,6 +1,9 @@
 # Yazi theme overrides
 # https://yazi-rs.github.io/docs/configuration/theme
 
+[flavor]
+dark = "catppuccin-mocha"
+
 [plugin]
 prepend_linemode = [
   { id = "git", name = "*" },
