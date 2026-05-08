@@ -5,7 +5,7 @@
 theme = catppuccin-mocha
 
 # Font
-font-family = FiraCode Nerd Font
+font-family = RecMonoDuotone Nerd Font
 
 # Keybindings
 keybind = shift+enter=text:\n

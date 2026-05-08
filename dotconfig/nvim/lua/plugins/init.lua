@@ -10,15 +10,7 @@ return {
     priority = 1000,
     opts = {
       flavour = "mocha",
-      integrations = {
-        cmp = true,
-        gitsigns = true,
-        indent_blankline = { enabled = true },
-        telescope = { enabled = true },
-        which_key = true,
-        dap = true,
-        dap_ui = true,
-      },
+      auto_integrations = true,
     },
     config = function(_, opts)
       require("catppuccin").setup(opts)
@@ -33,19 +25,16 @@ return {
     opts = {
       options = {
         theme = "auto",
-        component_separators = "|",
-        section_separators = { left = "", right = "" },
+        component_separators = "",
+        section_separators = { left = "", right = "" },
       },
       sections = {
-        -- left = ["mode", "spinner", "version-control"]
-        lualine_a = { "mode" },
+        lualine_a = { { "mode", separator = { left = "" }, right_padding = 2 } },
         lualine_b = { "branch", "diff" },
-        -- center = ["file-name", "file-modification-indicator"]
         lualine_c = { { "filename", path = 0 } },
-        -- right = ["file-type", "selections", "position", "file-encoding"]
         lualine_x = { "filetype" },
         lualine_y = { "encoding" },
-        lualine_z = { "location" },
+        lualine_z = { { "location", separator = { right = "" } } },
       },
     },
   },
