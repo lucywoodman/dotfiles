@@ -24,8 +24,8 @@ All paths are absolute — do not assume a working directory.
 Read these files (skip any that don't exist):
 
 - The current week's log file
-- `data-sources/today.md` for today's calendar detail
-- `data-sources/jira.md` for current Jira ticket statuses
+- `$CLAUDE_DATA_SOURCES/today.md` for today's calendar detail
+- `$CLAUDE_DATA_SOURCES/jira.md` for current Jira ticket statuses
 
 ### 2. Present today's view
 

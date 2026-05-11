@@ -44,7 +44,7 @@ Read these sources (skip any that don't exist):
 
 - **The weekly log** (already read in step 1) — extract the Plan (meetings, tasks with checkbox states) and the Log (sessions, activity summaries)
 - **Notes from the week** — Glob for `YYYY-MM-DD-*.md` at `~/thoughts/` for each day Mon–Fri of the target week. Also glob `~/thoughts/references/YYYY-MM-DD-*.md` and `~/thoughts/daily/YYYY-MM-DD.md`. Read each match for context.
-- **Cached Jira** — read `data-sources/jira.md` to cross-reference ticket statuses (In Review, Approved, Done, etc.)
+- **Cached Jira** — read `$CLAUDE_DATA_SOURCES/jira.md` to cross-reference ticket statuses (In Review, Approved, Done, etc.)
 
 ### 4. Synthesise the review
 
