@@ -68,6 +68,40 @@ optional_s() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+# System Functions
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Keep the system awake with a visible timer and blinking eyes
+unalias awake 2>/dev/null
+awake() {
+	caffeinate -dims &
+	local pid=$!
+	local start=$SECONDS
+
+	trap 'kill $pid 2>/dev/null; trap - INT' INT
+
+	figlet -f small "AWAKE" | lolcat
+	printf "  Ctrl+C to let it sleep\n\n"
+	printf "  ◉ ◉  wide awake for 00:00:00"
+
+	while kill -0 $pid 2>/dev/null; do
+		local elapsed=$((SECONDS - start))
+		local eyes="◉ ◉"
+		if (( elapsed > 0 && elapsed % 4 == 0 )); then
+			eyes="━ ━"
+		fi
+
+		printf "\r\033[K"
+		printf "  %s  wide awake for %02d:%02d:%02d" "$eyes" $((elapsed/3600)) $(((elapsed%3600)/60)) $((elapsed%60))
+		sleep 1
+	done
+
+	local elapsed=$((SECONDS - start))
+	printf "\r\033[K"
+	printf "  ━ ━  zzz fell asleep after %02d:%02d:%02d\n" $((elapsed/3600)) $(((elapsed%3600)/60)) $((elapsed%60))
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # Navigation Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -270,6 +304,52 @@ wtd() {
 	# Close the tmux window if it exists
 	if [ -n "$TMUX" ]; then
 		tmux kill-window -t ":${branch}" 2>/dev/null
+	fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Tmux Session Functions
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Start or attach to a predefined tmux session layout
+mux() {
+	local sesh="${1:-default}"
+
+	# Attach/switch if session already exists
+	if tmux has-session -t "$sesh" 2>/dev/null; then
+		if [ -n "$TMUX" ]; then
+			tmux switch-client -t "$sesh"
+		else
+			tmux attach-session -t "$sesh"
+		fi
+		return
+	fi
+
+	# Create session with predefined window layout
+	case "$sesh" in
+		default)
+			tmux new-session -ds "$sesh" -c "$HOME/thoughts" -n thoughts
+			tmux new-window -t "$sesh" -c "$HOME/.dotfiles" -n dotfiles
+			;;
+		worky-mcworkface)
+			tmux new-session -ds "$sesh" -c "$HOME/workspace" -n editor
+      tmux send-keys -t "$sesh:editor" "nvim" C-m
+
+			tmux new-window -t "$sesh" -c "$HOME/workspace" -n terminal
+			;;
+		*)
+			echo "Unknown session: $sesh"
+			echo "Available: default, worky-mcworkface"
+			return 1
+			;;
+	esac
+
+	# Select first window and attach
+	tmux select-window -t "$sesh:1"
+	if [ -n "$TMUX" ]; then
+		tmux switch-client -t "$sesh"
+	else
+		tmux attach-session -t "$sesh"
 	fi
 }
 
