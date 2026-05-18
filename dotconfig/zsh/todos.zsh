@@ -3,13 +3,12 @@
 # ═══════════════════════════════════════════════════════════════════════════
 # Todo Management Functions
 # ═══════════════════════════════════════════════════════════════════════════
-# Todos are stored as markdown files:
-#   ~/thoughts/tasks/active/    - current todos
-#   ~/thoughts/tasks/completed/ - done todos (with completed: date in frontmatter)
+# Todos are stored as markdown files in ~/thoughts/tasks/active/
+# Completed todos are deleted (not archived)
 
 # List or add todos
 todo() {
-	mkdir -p ~/thoughts/tasks/active ~/thoughts/tasks/completed
+	mkdir -p ~/thoughts/tasks/active
 
 	if [ -z "$1" ]; then
 		# No args - list todos
@@ -58,7 +57,6 @@ todo() {
 			echo "  todo drop <number>       Remove todo"
 			echo "  todo view <number>       View todo details"
 			echo "  todo edit <number>       Edit todo in \$EDITOR"
-			echo "  todo today               Show todos completed today"
 			echo ""
 			echo "Due date options: today, tomorrow, or DD-MM (uses current year)"
 			return
@@ -77,10 +75,6 @@ todo() {
 			;;
 		view)
 			_todo_view "$2"
-			return
-			;;
-		today)
-			_todo_today
 			return
 			;;
 	esac
@@ -165,11 +159,7 @@ _todo_done() {
 	for taskfile in ~/thoughts/tasks/active/*.md(N); do
 		if [ -f "$taskfile" ] && [ $i -eq "$1" ]; then
 			local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
-			# Add completed date after the opening ---
-			sed -i '' "/^---$/a\\
-completed: $(date +%Y-%m-%d)
-" "$taskfile"
-			mv "$taskfile" ~/thoughts/tasks/completed/
+			rm "$taskfile"
 			echo "✅ Completed: $title"
 			local remaining=$(ls -1 ~/thoughts/tasks/active/*.md 2>/dev/null | wc -l | tr -d ' ')
 			echo "   Remaining: $remaining tasks"
@@ -261,30 +251,4 @@ _todo_view() {
 		i=$((i + 1))
 	done
 	echo "Todo #$1 not found"
-}
-
-# Show todos completed today (internal)
-_todo_today() {
-	local today=$(date +%Y-%m-%d)
-	echo "✅ Todos completed today ($today)"
-	echo ""
-
-	local found=0
-	for taskfile in ~/thoughts/tasks/completed/*.md(N); do
-		if [ -f "$taskfile" ]; then
-			local completed=$(grep "^completed:" "$taskfile" 2>/dev/null | sed 's/^completed: *//' | tr -d ' ')
-			if [ "$completed" = "$today" ]; then
-				local title=$(grep "^# Task:" "$taskfile" 2>/dev/null | sed 's/^# Task: //')
-				echo "  ✓ $title"
-				found=$((found + 1))
-			fi
-		fi
-	done
-
-	if [ $found -eq 0 ]; then
-		echo "  No todos completed today yet."
-	else
-		echo ""
-		echo "  Total: $found"
-	fi
 }

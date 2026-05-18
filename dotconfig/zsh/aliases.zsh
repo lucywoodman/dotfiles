@@ -6,9 +6,6 @@
 alias home="cd $HOME"
 alias dotfiles="cd $HOME/.dotfiles"
 alias library="cd $HOME/Library"
-alias notes="cd $HOME/notes"
-alias notes='tmux new -A -s pm -c "$HOME/notes"'
-alias work='tmux new -A -s work -c "$HOME/workspace"'
 alias downloads='cd /private/tmp/downloads'
 
 # === System Commands ===
