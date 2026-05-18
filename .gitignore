@@ -13,6 +13,9 @@ Thumbs.db
 .claude/
 dotconfig/claude/settings.json
 
+# Runtime-installed plugins
+dotconfig/tmux/plugins/
+
 # Temporary files
 *.tmp
 *.swp
