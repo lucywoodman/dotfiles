@@ -129,8 +129,7 @@ tasks:
   link:tmux:
     desc: Symlink tmux configuration
     cmds:
-      - mkdir -p {{.XDG_CONFIG_HOME}}/tmux
-      - ln -sf {{.DOTFILES_DIR}}/dotconfig/tmux/tmux.conf {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
+      - ln -sfn {{.DOTFILES_DIR}}/dotconfig/tmux {{.XDG_CONFIG_HOME}}/tmux
 
   link:yazi:
     desc: Symlink yazi file manager configuration
@@ -215,7 +214,7 @@ tasks:
         {{.XDG_CONFIG_HOME}}/mise/config.toml
         {{.XDG_CONFIG_HOME}}/aerospace/aerospace.toml
         {{.XDG_CONFIG_HOME}}/ghostty/config
-        {{.XDG_CONFIG_HOME}}/tmux/tmux.conf
+        {{.XDG_CONFIG_HOME}}/tmux
         {{.XDG_CONFIG_HOME}}/yazi/yazi.toml
         {{.XDG_CONFIG_HOME}}/yazi/keymap.toml
         {{.XDG_CONFIG_HOME}}/yazi/theme.toml

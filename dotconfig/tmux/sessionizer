@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Tmux sessionizer — fuzzy-find a project and create/switch to its session.
+# Inspired by ThePrimeagen/tmux-sessionizer.
+
+# Homebrew PATH (tmux popups don't inherit the full shell environment)
+[[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:$PATH"
+
+# ── Directories to include directly (pinned projects) ───────────────────────
+pinned_dirs=(
+  "$HOME/thoughts"
+  "$HOME/.dotfiles"
+)
+
+# ── Select a project ───────────────────────────────────────────────────────
+if [ -n "$1" ]; then
+  selected="$1"
+else
+  selected=$(
+    {
+      printf '%s\n' "${pinned_dirs[@]}"
+      find "$HOME/workspace" -mindepth 1 -maxdepth 4 -type d -name .git 2>/dev/null \
+        | sed 's|/\.git$||'
+    } \
+    | sort \
+    | fzf --reverse --prompt='project> '
+  )
+fi
+
+[ -z "$selected" ] && exit 0
+
+# ── Derive session name from directory basename ────────────────────────────
+name=$(basename "$selected" | tr './' '__')
+
+# ── Create session if it doesn't exist ─────────────────────────────────────
+if ! tmux has-session -t="$name" 2>/dev/null; then
+  tmux new-session -ds "$name" -c "$selected"
+fi
+
+# ── Attach or switch ──────────────────────────────────────────────────────
+if [ -n "$TMUX" ]; then
+  tmux switch-client -t "$name"
+else
+  tmux attach-session -t "$name"
+fi

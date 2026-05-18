@@ -311,46 +311,9 @@ wtd() {
 # Tmux Session Functions
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Start or attach to a predefined tmux session layout
+# Tmux sessionizer: fuzzy-find a project and create/switch to its session
 mux() {
-	local sesh="${1:-default}"
-
-	# Attach/switch if session already exists
-	if tmux has-session -t "$sesh" 2>/dev/null; then
-		if [ -n "$TMUX" ]; then
-			tmux switch-client -t "$sesh"
-		else
-			tmux attach-session -t "$sesh"
-		fi
-		return
-	fi
-
-	# Create session with predefined window layout
-	case "$sesh" in
-		default)
-			tmux new-session -ds "$sesh" -c "$HOME/thoughts" -n thoughts
-			tmux new-window -t "$sesh" -c "$HOME/.dotfiles" -n dotfiles
-			;;
-		worky-mcworkface)
-			tmux new-session -ds "$sesh" -c "$HOME/workspace" -n editor
-      tmux send-keys -t "$sesh:editor" "nvim" C-m
-
-			tmux new-window -t "$sesh" -c "$HOME/workspace" -n terminal
-			;;
-		*)
-			echo "Unknown session: $sesh"
-			echo "Available: default, worky-mcworkface"
-			return 1
-			;;
-	esac
-
-	# Select first window and attach
-	tmux select-window -t "$sesh:1"
-	if [ -n "$TMUX" ]; then
-		tmux switch-client -t "$sesh"
-	else
-		tmux attach-session -t "$sesh"
-	fi
+	~/.config/tmux/sessionizer "$@"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
